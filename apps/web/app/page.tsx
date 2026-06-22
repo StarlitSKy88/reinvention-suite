@@ -2,14 +2,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 /**
- * 首页 — japanese-ma-minimalism
- *
- * 设计哲学：
- * - 巨大 hero 标题（clamp 3.5-9rem）
- * - 不对称布局（左侧内容，右侧大量留白）
- * - 区段间距 ≥ py-32
- * - 朱红强调色最多 1 次
- * - 无圆角按钮（编辑感文字链接）
+ * 首页 — 黑底白字红字点缀
+ * 保留 Ma 极简主义布局（不对称 + 慷慨留白 + 编辑感标题）
  */
 
 export default function HomePage() {
@@ -17,10 +11,10 @@ export default function HomePage() {
     <main className="bg-background">
       {/* ========== Hero：不对称布局 ========== */}
       <section className="relative min-h-[90vh] flex items-center">
-        {/* 朱红强调：极大背景数字（每个主要区段一个）*/}
+        {/* 红字背景数字（最大视觉锚点）*/}
         <span
           aria-hidden
-          className="absolute top-12 right-8 text-[20vw] font-light text-foreground/[0.03] leading-none select-none pointer-events-none"
+          className="absolute top-12 right-8 text-[20vw] font-light text-accent/[0.06] leading-none select-none pointer-events-none"
         >
           01
         </span>
@@ -28,48 +22,49 @@ export default function HomePage() {
         <div className="ma-layout w-full">
           <div className="ma-bleed-right py-32">
             <div className="flex flex-col gap-12 max-w-prose">
-              {/* 编号标注 */}
+              {/* 编号标注 + 红色短横线 */}
               <div className="flex items-center gap-6">
                 <div className="w-8 h-px bg-accent" />
-                <span className="meta-label">二零二六 · 再出発</span>
+                <span className="meta-label text-accent">2026 · 再出发</span>
               </div>
 
-              {/* Hero 标题 — 巨大衬线 */}
+              {/* 巨大 Hero 标题 */}
               <h1 className="hero-display editorial-title">
-                三十五歳以上、<br />
-                二十五のふりを<br />
-                しなくていい
+                三十五岁以上<br />
+                不必再<br />
+                <span className="text-accent">假装二十五</span>
               </h1>
 
               {/* 副标 */}
               <p className="text-lg text-muted-foreground max-w-reading leading-relaxed">
-                再出発は、三十五歳以上の求職者専用の無料アシスタント。
-                全網から企業を探し、不足を補い、再就職までの期間を八ヶ月から四ヶ月に縮める。
+                再出发是一款专为三十五岁以上失业群体设计的免费再就业助手。
+                全网匹配企业，主动协助弥补能力差距，
+                让再就业周期从八个月缩短到四个月。
               </p>
 
-              {/* 编辑感 CTA（无填充）*/}
+              {/* 编辑感 CTA */}
               <div className="flex items-center gap-12 pt-6">
                 <Link href="#features">
-                  <Button variant="accent">無料で始める</Button>
+                  <Button variant="accent">免费开始</Button>
                 </Link>
                 <Link href="/about">
-                  <Button variant="editorial">詳しく見る</Button>
+                  <Button variant="editorial">了解更多</Button>
                 </Link>
               </div>
 
               {/* 元数据 */}
               <div className="meta-label pt-12 border-t border-border mt-12 grid grid-cols-3 gap-8">
                 <div>
-                  <div className="text-foreground/60 text-[10px]">完全無料</div>
-                  <div className="mt-1">料金なし</div>
+                  <div className="text-foreground/60 text-[10px]">完全免费</div>
+                  <div className="mt-1">无隐藏收费</div>
                 </div>
                 <div>
-                  <div className="text-foreground/60 text-[10px]">個人情報保護</div>
-                  <div className="mt-1">原文非送信</div>
+                  <div className="text-foreground/60 text-[10px]">隐私保护</div>
+                  <div className="mt-1">原文不上传</div>
                 </div>
                 <div>
-                  <div className="text-foreground/60 text-[10px]">運営主体</div>
-                  <div className="mt-1">政府購買</div>
+                  <div className="text-foreground/60 text-[10px]">运营主体</div>
+                  <div className="mt-1 text-accent">政府购买</div>
                 </div>
               </div>
             </div>
@@ -81,48 +76,39 @@ export default function HomePage() {
 
       {/* ========== Features：3fr 2fr 不对称 ========== */}
       <section id="features" className="py-section scroll-mt-20">
-        <span
-          aria-hidden
-          className="absolute right-8 text-[20vw] font-light text-foreground/[0.03] leading-none select-none pointer-events-none"
-        >
-          02
-        </span>
-
         <div className="ma-layout">
           <div className="ma-full grid grid-cols-1 md:grid-cols-5 gap-12 md:gap-24">
-            {/* 左侧：标题 */}
             <div className="md:col-span-2 flex flex-col gap-8">
               <div className="flex items-center gap-6">
                 <div className="w-8 h-px bg-accent" />
-                <span className="meta-label">四つの柱</span>
+                <span className="meta-label">四大支柱</span>
               </div>
               <h2 className="editorial-title text-display-sm">
-                私たちが<br />
-                すること
+                我们<br />
+                做什么
               </h2>
             </div>
 
-            {/* 右侧：4 个特性（不对称布局）*/}
             <div className="md:col-span-3 flex flex-col gap-16">
               <Feature
                 num="I"
-                title="全網マッチング"
-                desc="ボス直聘に留まらず、企業の公式サイト、業界コミュニティ、人材紹介の全てから、最適な求人を見つける。"
+                title="全网匹配"
+                desc="不只 Boss 直聘，搜遍公司官网、行业社群、猎头渠道，找到真正匹配你的岗位。"
               />
               <Feature
                 num="II"
-                title="履歴書の最適化"
-                desc="AI 反事実改写 + 年齢ブラインド + 差別トリガー検出。AI は翻訳するだけで、創作しない。"
+                title="简历优化"
+                desc="AI 反幻觉改写 + 年龄去敏 + 反歧视检测。AI 只翻译不创作，保留你的真实业绩。"
               />
               <Feature
                 num="III"
-                title="実プロジェクト孵化"
-                desc="AI が捏造したプロジェクトではなく、本当にあなたがやり遂げたプロジェクト。OSS、執筆、MVP——履歴書に書ける実物を作る。"
+                title="真实项目孵化"
+                desc="协助你做出真实可写进简历的项目（开源、写作、MVP、数据实验），而不是 AI 凭空编造。"
               />
               <Feature
                 num="IV"
-                title="プライバシー保護"
-                desc="履歴書の原文はブラウザのみ。PII は自動匿名化。個人情報保護法準拠。"
+                title="隐私保护"
+                desc="简历原文只在你的浏览器，PII 自动脱敏，符合《个保法》要求。"
               />
             </div>
           </div>
@@ -131,21 +117,20 @@ export default function HomePage() {
 
       <hr className="structural-line" />
 
-      {/* ========== 引用 / 数据引用 ========== */}
+      {/* ========== 引用样式：红色左竖线 ========== */}
       <section className="py-section">
         <div className="ma-layout">
           <div className="ma-bleed-left">
-            <div className="ml-[12vw] pl-6 border-l border-accent max-w-prose">
-              <div className="meta-label mb-8">数字で見る</div>
+            <div className="ml-[12vw] pl-6 border-l-2 border-accent max-w-prose">
+              <div className="meta-label mb-8 text-accent">数据对比</div>
               <p className="text-3xl md:text-5xl font-light editorial-title leading-tight">
-                求職期間を<br />
-                <span className="text-accent">八ヶ月</span>
-                <span className="text-foreground/40"> から </span>
-                <span className="text-accent">四ヶ月</span>
-                <span className="text-foreground/40"> へ</span>
+                求职周期从<br />
+                <span className="text-accent">八个月</span>
+                <span className="text-foreground/40"> 到 </span>
+                <span className="text-accent">四个月</span>
               </p>
               <p className="mt-12 text-muted-foreground text-sm">
-                — 中華人民共和国人力資源和社会保障部『二零二六年 第三季度 報告』
+                — 中华人民共和国人力资源和社会保障部《2026 年第三季度报告》
               </p>
             </div>
           </div>
@@ -161,25 +146,25 @@ export default function HomePage() {
             <div className="md:col-span-2">
               <div className="flex items-center gap-6 mb-8">
                 <div className="w-8 h-px bg-accent" />
-                <span className="meta-label">政府購買</span>
+                <span className="meta-label">To-G 模式</span>
               </div>
               <h2 className="editorial-title text-display-sm">
-                なぜ<br />
-                無料なのか
+                为什么<br />
+                完全免费
               </h2>
             </div>
 
             <div className="md:col-span-3">
               <p className="text-base leading-loose text-foreground/80 mb-8">
-                再出発は、各地の社会保険局による「再就職支援サービス」の一環として運営されています。
-                ユーザーから料金を取る代わりに、政府から支援を受けています。
+                再出发由各地人社局"再就业服务"采购支持。
+                我们不靠用户赚钱，而是帮政府解决"稳就业"KPI。
               </p>
               <p className="text-base leading-loose text-foreground/80 mb-12">
-                私たちの目標は、三十五歳以上の失業者八千万人を、四ヶ月で再就職させること。
-                それは商業 SaaS ではなく、公共サービスです。
+                我们的目标：让八千万三十五岁以上失业者，
+                在四个月内重新就业。这是公共事业，不是商业 SaaS。
               </p>
               <Link href="/about">
-                <Button variant="editorial">運営理念を見る</Button>
+                <Button variant="editorial">了解我们的理念</Button>
               </Link>
             </div>
           </div>
@@ -191,14 +176,14 @@ export default function HomePage() {
         <div className="ma-layout">
           <div className="ma-full flex flex-col md:flex-row justify-between items-start gap-8">
             <div className="meta-label">
-              © 二〇二六 — 再出発 Reinvention Suite
+              © 2026 — 再出发 Reinvention Suite
             </div>
             <div className="flex gap-12 meta-label">
               <Link href="/gov-dashboard" className="hover:opacity-50 transition-opacity duration-600">
-                政府用
+                政府看板
               </Link>
               <Link href="/about" className="hover:opacity-50 transition-opacity duration-600">
-                概要
+                关于
               </Link>
             </div>
           </div>
@@ -219,7 +204,7 @@ function Feature({
 }) {
   return (
     <div className="grid grid-cols-12 gap-6">
-      <div className="col-span-2 meta-label pt-1">{num}</div>
+      <div className="col-span-2 meta-label pt-1 text-accent">{num}</div>
       <div className="col-span-10 flex flex-col gap-3">
         <h3 className="editorial-title text-2xl font-light">{title}</h3>
         <p className="text-sm text-muted-foreground leading-loose">{desc}</p>

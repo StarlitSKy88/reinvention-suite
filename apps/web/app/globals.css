@@ -3,36 +3,24 @@
 @tailwind utilities;
 
 /* ============================================
- * japanese-ma-minimalism 设计系统
- * 哲学：空白即存在 (Ma 間) + 侘寂不完美
+ * 设计规范：黑底白字红字点缀
+ * 保留 Ma 极简主义布局哲学
  * ============================================ */
 
 @layer base {
   :root {
-    /* === 调色板：和纸（亮色）=== */
-    --background: 36 23% 95%;      /* #F8F5F0 和纸骨色 */
-    --surface: 0 0% 100%;         /* #FFFFFF 表面 */
-    --foreground: 30 8% 10%;       /* #1A1A18 暖墨色 */
-    --muted: 30 4% 92%;           /* 微妙背景 */
-    --muted-foreground: 30 4% 42%; /* #6B6862 褪色墨色 */
-    --subtle: 30 6% 67%;          /* #A8A49E 三级文本 */
-    --border: 30 14% 89%;         /* #E8E4DE 结构线 */
-    --accent: 5 63% 46%;          /* #C0392B 朱红强调色 */
-    --accent-foreground: 36 23% 95%;
+    /* === 黑底调色板 === */
+    --background: 0 0% 4%;         /* #0A0A0A 纯黑偏暖 */
+    --surface: 0 0% 7%;            /* #111111 表面 */
+    --foreground: 0 0% 100%;       /* #FFFFFF 纯白 */
+    --muted: 0 0% 10%;            /* 微妙背景 */
+    --muted-foreground: 0 0% 66%;  /* #A8A8A8 灰白 */
+    --subtle: 0 0% 50%;           /* 三级文本 */
+    --border: 0 0% 12%;           /* #1F1F1F 边框 */
+    --accent: 4 100% 60%;         /* #FF3B30 鲜红 */
+    --accent-foreground: 0 0% 100%;
 
-    --radius: 0;                  /* 极简：完全无圆角 */
-  }
-
-  .dark {
-    --background: 60 3% 7%;       /* #111110 墨色 */
-    --surface: 30 8% 10%;         /* #1A1A18 */
-    --foreground: 36 18% 92%;     /* #F0EDE6 老化纸张 */
-    --muted: 30 4% 15%;
-    --muted-foreground: 30 3% 47%;
-    --subtle: 30 4% 30%;
-    --border: 30 4% 22%;
-    --accent: 8 71% 58%;          /* #E05A47 暗色朱红 */
-    --accent-foreground: 60 3% 7%;
+    --radius: 0;                  /* 无圆角 */
   }
 
   * {
@@ -43,35 +31,28 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    /* CJK 比例标点 */
-    font-feature-settings: "pkna" 1, "ss01" 1;
+    font-feature-settings: "pkna" 1;
   }
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Optima', 'Avenir Next', 'Avenir', 'Trebuchet MS', 'Hiragino Sans', 'Yu Gothic', 'PingFang SC', system-ui, sans-serif;
+    font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+                 'Source Han Sans CN', system-ui, sans-serif;
     font-feature-settings: "pkna" 1;
   }
 
-  /* 日文/中文文本：明朝体标题 + 哥特体正文 */
-  :lang(ja), :lang(zh) {
-    font-family: 'Hiragino Sans', 'Yu Gothic', 'PingFang SC', system-ui;
-  }
-
-  /* 阅读段落：58ch 限制 */
   p {
     max-width: 58ch;
     line-height: 1.85;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
   }
 
-  /* 全局动效曲线 */
   ::selection {
-    background: hsl(var(--accent) / 0.2);
+    background: hsl(var(--accent) / 0.3);
   }
 }
 
-/* === Ma 网格 === */
+/* === Ma 布局（保留）=== */
 @layer utilities {
   .ma-layout {
     display: grid;
@@ -83,10 +64,6 @@
     grid-column: 1 / -1;
   }
 
-  .ma-center {
-    grid-column: 2;
-  }
-
   .ma-bleed-left {
     grid-column: 1 / 3;
   }
@@ -95,9 +72,9 @@
     grid-column: 2 / -1;
   }
 
-  /* === 巨大 Hero 标题 === */
+  /* === 巨大 Hero === */
   .hero-display {
-    font-family: 'Iowan Old Style', 'Apple Garamond', 'Baskerville', 'Hiragino Mincho ProN', 'Yu Mincho', 'Songti SC', Georgia, serif;
+    font-family: 'Source Han Serif SC', 'Songti SC', 'STSong', Georgia, serif;
     font-size: clamp(3.5rem, 9vw, 9rem);
     line-height: 1.05;
     letter-spacing: -0.02em;
@@ -106,14 +83,14 @@
 
   /* === 编辑感标题 === */
   .editorial-title {
-    font-family: 'Iowan Old Style', 'Apple Garamond', 'Baskerville', 'Hiragino Mincho ProN', 'Yu Mincho', 'Songti SC', Georgia, serif;
+    font-family: 'Source Han Serif SC', 'Songti SC', 'STSong', Georgia, serif;
     font-weight: 400;
     letter-spacing: -0.01em;
   }
 
   /* === 元数据标注 === */
   .meta-label {
-    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-family: 'SF Mono', 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
     font-size: 0.75rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -134,11 +111,6 @@
     background: hsl(var(--accent));
   }
 
-  /* === 缓慢淡入 === */
-  .fade-in {
-    animation: fadeIn 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-  }
-
   /* === 链接风格 === */
   .editorial-link {
     @apply inline-flex items-center gap-3 text-sm uppercase tracking-[0.08em] border-b border-current pb-0.5 hover:opacity-60 transition-opacity duration-300;
@@ -156,7 +128,6 @@
   }
 }
 
-/* === 隐藏滚动条 === */
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }

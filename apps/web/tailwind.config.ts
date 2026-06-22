@@ -1,8 +1,8 @@
 import type { Config } from 'tailwindcss';
 
 /**
- * japanese-ma-minimalism Tailwind 配置
- * 约束：无圆角、无阴影、无渐变、单色克制
+ * 设计规范：黑底白字红字点缀
+ * 调色板：纯黑 / 纯白 / 鲜红
  */
 const config: Config = {
   darkMode: ['class'],
@@ -40,20 +40,18 @@ const config: Config = {
         DEFAULT: '0',
         md: '0',
         lg: '0',
-        full: '0', // 强制 0
+        full: '0',
       },
       fontFamily: {
-        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-display)', 'serif'],
-        mono: ['var(--font-mono)', 'monospace'],
+        sans: ['PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'system-ui', 'sans-serif'],
+        display: ['Source Han Serif SC', 'Songti SC', 'STSong', 'Georgia', 'serif'],
+        mono: ['SF Mono', 'JetBrains Mono', 'Consolas', 'monospace'],
       },
       fontSize: {
-        // 巨大显示字体
         'display': ['clamp(3.5rem, 9vw, 9rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
         'display-sm': ['clamp(2.5rem, 6vw, 5rem)', { lineHeight: '1.1' }],
       },
       spacing: {
-        // 8px 网格 + 慷慨间距
         'section': 'clamp(6rem, 10vw, 16rem)',
         'gutter': 'clamp(1.5rem, 5vw, 6rem)',
       },

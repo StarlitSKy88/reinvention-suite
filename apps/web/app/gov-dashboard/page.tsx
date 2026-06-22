@@ -1,25 +1,14 @@
 /**
- * 政府数据看板 — japanese-ma-minimalism
- *
- * 设计哲学：
- * - 编辑感大数字（clamp 4-7rem）
- * - 不对称布局（3fr 2fr）
- * - 朱红强调极少使用
- * - 数据可视化用细线 + 透明度
- * - 无阴影、无圆角、无渐变
+ * 政府数据看板 — 黑底白字红字点缀
+ * 编辑感大数字 + 不对称布局
+ * 全中文
  */
 
 'use client';
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Users,
-  Activity,
-  Target,
-  TrendingUp,
-  RefreshCw,
-} from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import type {
   GovDashboardMetrics,
   GovSuccessCase,
@@ -63,7 +52,7 @@ export default function GovDashboardPage() {
   if (loading || !metrics) {
     return (
       <main className="ma-layout min-h-screen flex items-center justify-center">
-        <div className="meta-label">読込中…</div>
+        <div className="meta-label">加载中…</div>
       </main>
     );
   }
@@ -77,10 +66,10 @@ export default function GovDashboardPage() {
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-6">
                 <div className="w-8 h-px bg-accent" />
-                <span className="meta-label">政府専用 · 都市データ</span>
+                <span className="meta-label text-accent">政府专用 · 城市数据</span>
               </div>
               <h1 className="editorial-title text-3xl md:text-5xl font-light">
-                再就職<br />サービス 報告
+                再就业<br />服务 报告
               </h1>
               <div className="meta-label pt-4">
                 {metrics.period.start} — {metrics.period.end}
@@ -90,11 +79,11 @@ export default function GovDashboardPage() {
             <div className="flex flex-col items-end gap-4">
               <div className="meta-label flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
-                リアルタイム更新
+                实时数据更新
               </div>
               <Button variant="editorial" onClick={loadDashboard}>
                 <RefreshCw className="mr-2 h-3 w-3" strokeWidth={1} />
-                更新
+                刷新
               </Button>
             </div>
           </div>
@@ -107,37 +96,37 @@ export default function GovDashboardPage() {
           <div className="ma-full">
             <div className="flex items-center gap-6 mb-16">
               <div className="w-8 h-px bg-accent" />
-              <span className="meta-label">核心指標 · 四項目</span>
+              <span className="meta-label">核心指标 · 四项</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
               <BigMetric
                 num="I"
-                label="サービスカバー"
+                label="服务覆盖"
                 value={metrics.serviceCoverage.totalUsers.toLocaleString()}
-                sub={`三十五歳以上比率 ${(metrics.serviceCoverage.ageAbove35Ratio * 100).toFixed(0)}%`}
-                trend={`今月 +${metrics.serviceCoverage.newUsersThisMonth.toLocaleString()}`}
+                sub={`三十五岁以上占比 ${(metrics.serviceCoverage.ageAbove35Ratio * 100).toFixed(0)}%`}
+                trend={`本月新增 +${metrics.serviceCoverage.newUsersThisMonth.toLocaleString()}`}
               />
               <BigMetric
                 num="II"
-                label="月次アクティブ"
+                label="月活用户"
                 value={metrics.activity.monthlyActiveUsers.toLocaleString()}
-                sub={`定着率 ${(metrics.activity.retentionRate * 100).toFixed(0)}%`}
-                trend="前期比 +12%"
+                sub={`留存率 ${(metrics.activity.retentionRate * 100).toFixed(0)}%`}
+                trend="环比 +12%"
               />
               <BigMetric
                 num="III"
-                label="再就職成功率"
+                label="再就业成功率"
                 value={`${(metrics.successRate.reemploymentRate * 100).toFixed(1)}%`}
                 sub={`${metrics.successRate.successfulReemployment.toLocaleString()} 人成功`}
-                trend={`平均 ${metrics.successRate.averageJobSearchDays} 日`}
+                trend={`平均 ${metrics.successRate.averageJobSearchDays} 天`}
               />
               <BigMetric
                 num="IV"
-                label="ユーザー評価"
+                label="用户满意度"
                 value={`NPS ${metrics.satisfaction.npsScore}`}
-                sub={`好評率 ${(metrics.satisfaction.positiveRate * 100).toFixed(0)}%`}
-                trend="優秀"
+                sub={`好评率 ${(metrics.satisfaction.positiveRate * 100).toFixed(0)}%`}
+                trend="优秀"
               />
             </div>
           </div>
@@ -146,35 +135,35 @@ export default function GovDashboardPage() {
 
       <hr className="structural-line" />
 
-      {/* ========== 效率提升 ========== */}
+      {/* ========== 服务深度 ========== */}
       <section className="py-section">
         <div className="ma-layout">
           <div className="ma-full grid grid-cols-1 md:grid-cols-5 gap-12 md:gap-24">
             <div className="md:col-span-2">
               <div className="flex items-center gap-6 mb-8">
                 <div className="w-8 h-px bg-accent" />
-                <span className="meta-label">効率向上 · 三項目</span>
+                <span className="meta-label">服务深度 · 三项</span>
               </div>
               <h2 className="editorial-title text-3xl font-light">
-                累積<br />サービス深度
+                累计<br />服务深度
               </h2>
             </div>
 
             <div className="md:col-span-3 flex flex-col gap-12">
               <SmallMetric
-                label="履歴書最適化回数"
+                label="简历优化次数"
                 value={metrics.serviceDepth.resumeRewrites.toLocaleString()}
-                sub={`累計 ${metrics.serviceDepth.resumeUploads.toLocaleString()} 件を構造化`}
+                sub={`累计 ${metrics.serviceDepth.resumeUploads.toLocaleString()} 份简历结构化`}
               />
               <SmallMetric
-                label="求人マッチング回数"
+                label="岗位匹配次数"
                 value={metrics.serviceDepth.jobMatches.toLocaleString()}
-                sub="全網ボス/拉勾/猎聘/公式サイト"
+                sub="全网 Boss/拉勾/猎聘/官网"
               />
               <SmallMetric
-                label="プロジェクト孵化"
+                label="项目孵化"
                 value={metrics.serviceDepth.projectIncubations.toLocaleString()}
-                sub="実プロジェクト支援（AI 捏造ではない）"
+                sub="真实项目孵化（不是 AI 编造）"
               />
             </div>
           </div>
@@ -189,24 +178,24 @@ export default function GovDashboardPage() {
           <div className="ma-full">
             <div className="flex items-center gap-6 mb-16">
               <div className="w-8 h-px bg-accent" />
-              <span className="meta-label">人口統計 · 四次元</span>
+              <span className="meta-label">人口统计 · 四维</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16">
               <Distribution
-                title="年齢分布"
+                title="年龄分布"
                 data={metrics.userDemographics.ageDistribution}
               />
               <Distribution
-                title="業界分布"
+                title="行业分布"
                 data={metrics.userDemographics.industryDistribution}
               />
               <Distribution
-                title="地域分布"
+                title="地区分布"
                 data={metrics.userDemographics.regionDistribution}
               />
               <Distribution
-                title="失業期間分布"
+                title="失业时长分布"
                 data={metrics.userDemographics.unemploymentDurationDistribution}
               />
             </div>
@@ -222,11 +211,11 @@ export default function GovDashboardPage() {
           <div className="ma-full">
             <div className="flex items-center gap-6 mb-16">
               <div className="w-8 h-px bg-accent" />
-              <span className="meta-label">成功事例 · ユーザー許諾済み</span>
+              <span className="meta-label">成功案例 · 用户授权</span>
             </div>
 
             {cases.length === 0 ? (
-              <div className="meta-label">読込中…</div>
+              <div className="meta-label">加载中…</div>
             ) : (
               <div className="flex flex-col gap-12">
                 {cases.map((c, idx) => (
@@ -238,12 +227,11 @@ export default function GovDashboardPage() {
         </div>
       </section>
 
-      {/* ========== Footer ========== */}
       <footer className="border-t border-border py-12">
         <div className="ma-layout">
           <div className="ma-full text-center meta-label">
-            データは脱敏済み · 個人情報保護法準拠 · 履歴書原文は非送信<br />
-            再出発 — 政府再就職サービス支援
+            数据已脱敏 · 符合《个保法》要求 · 简历原文不上传<br />
+            再出发 — 政府再就业服务支持
           </div>
         </div>
       </footer>
@@ -270,7 +258,7 @@ function BigMetric({
     <div className="bg-background p-12 flex flex-col gap-6">
       <div className="flex items-start justify-between">
         <span className="meta-label">{label}</span>
-        <span className="meta-label opacity-40">{num}</span>
+        <span className="meta-label opacity-40 text-accent">{num}</span>
       </div>
       <div className="text-display-sm editorial-title font-light">
         {value}
@@ -323,7 +311,7 @@ function Distribution({
             </div>
             <div className="h-px bg-border relative">
               <div
-                className="absolute inset-y-0 left-0 bg-foreground"
+                className="absolute inset-y-0 left-0 bg-accent"
                 style={{ width: `${(value / max) * 100}%` }}
               />
             </div>
@@ -343,7 +331,7 @@ function SuccessCaseItem({
 }) {
   return (
     <article className="grid grid-cols-12 gap-8 border-t border-border pt-8">
-      <div className="col-span-1 meta-label">{String(index).padStart(2, '0')}</div>
+      <div className="col-span-1 meta-label text-accent">{String(index).padStart(2, '0')}</div>
 
       <div className="col-span-7 max-w-reading flex flex-col gap-4">
         <div className="flex items-center gap-4 meta-label">
@@ -351,7 +339,7 @@ function SuccessCaseItem({
           <span className="opacity-30">·</span>
           <span>{c.industry}</span>
           <span className="opacity-30">·</span>
-          <span>失業 {c.unemploymentMonths} ヶ月</span>
+          <span>失业 {c.unemploymentMonths} 个月</span>
         </div>
         <div className="meta-label">→ {c.targetJob}</div>
         <p className="text-base leading-loose text-foreground/85">
@@ -361,14 +349,14 @@ function SuccessCaseItem({
 
       <div className="col-span-4 flex flex-col items-end justify-between">
         <div className="flex flex-col items-end gap-2">
-          <div className="meta-label">転職前</div>
+          <div className="meta-label">入职前</div>
           <div className="text-2xl text-muted-foreground line-through">
             {c.originalSalary} 万
           </div>
         </div>
         <div className="accent-mark" />
         <div className="flex flex-col items-end gap-2">
-          <div className="meta-label text-accent">現在</div>
+          <div className="meta-label text-accent">入职后</div>
           <div className="text-5xl editorial-title font-light text-accent">
             {c.newSalary} <span className="text-2xl">万</span>
           </div>
