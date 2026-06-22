@@ -1,22 +1,23 @@
 /**
- * 政府数据看板 - UI 页面
+ * 政府数据看板 — japanese-ma-minimalism
  *
- * 美观度达到"政府演示级别"
- * 支持打印导出
+ * 设计哲学：
+ * - 编辑感大数字（clamp 4-7rem）
+ * - 不对称布局（3fr 2fr）
+ * - 朱红强调极少使用
+ * - 数据可视化用细线 + 透明度
+ * - 无阴影、无圆角、无渐变
  */
 
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Users,
   Activity,
   Target,
   TrendingUp,
-  Heart,
-  Download,
   RefreshCw,
 } from 'lucide-react';
 import type {
@@ -61,290 +62,318 @@ export default function GovDashboardPage() {
 
   if (loading || !metrics) {
     return (
-      <main className="container mx-auto px-4 py-12">
-        <div className="text-center text-muted-foreground">加载中...</div>
+      <main className="ma-layout min-h-screen flex items-center justify-center">
+        <div className="meta-label">読込中…</div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      <div className="container mx-auto px-4 py-8">
-        {/* 顶部标题栏 */}
-        <header className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">
-              再就业服务数据看板
-            </h1>
-            <p className="mt-1 text-sm text-slate-600">
-              统计周期：{metrics.period.start} ~ {metrics.period.end}
-              <span className="ml-2 inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                <span className="mr-1 h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
-                数据实时更新
-              </span>
-            </p>
+    <main className="bg-background">
+      {/* ========== Header ========== */}
+      <section className="border-b border-border py-12">
+        <div className="ma-layout">
+          <div className="ma-full flex justify-between items-end">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-6">
+                <div className="w-8 h-px bg-accent" />
+                <span className="meta-label">政府専用 · 都市データ</span>
+              </div>
+              <h1 className="editorial-title text-3xl md:text-5xl font-light">
+                再就職<br />サービス 報告
+              </h1>
+              <div className="meta-label pt-4">
+                {metrics.period.start} — {metrics.period.end}
+              </div>
+            </div>
+
+            <div className="flex flex-col items-end gap-4">
+              <div className="meta-label flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
+                リアルタイム更新
+              </div>
+              <Button variant="editorial" onClick={loadDashboard}>
+                <RefreshCw className="mr-2 h-3 w-3" strokeWidth={1} />
+                更新
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={loadDashboard}>
-              <RefreshCw className="mr-2 h-4 w-4" />
-              刷新
-            </Button>
-            <Button variant="outline" size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              导出 PDF
-            </Button>
+        </div>
+      </section>
+
+      {/* ========== 4 大指标 ========== */}
+      <section className="py-section">
+        <div className="ma-layout">
+          <div className="ma-full">
+            <div className="flex items-center gap-6 mb-16">
+              <div className="w-8 h-px bg-accent" />
+              <span className="meta-label">核心指標 · 四項目</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+              <BigMetric
+                num="I"
+                label="サービスカバー"
+                value={metrics.serviceCoverage.totalUsers.toLocaleString()}
+                sub={`三十五歳以上比率 ${(metrics.serviceCoverage.ageAbove35Ratio * 100).toFixed(0)}%`}
+                trend={`今月 +${metrics.serviceCoverage.newUsersThisMonth.toLocaleString()}`}
+              />
+              <BigMetric
+                num="II"
+                label="月次アクティブ"
+                value={metrics.activity.monthlyActiveUsers.toLocaleString()}
+                sub={`定着率 ${(metrics.activity.retentionRate * 100).toFixed(0)}%`}
+                trend="前期比 +12%"
+              />
+              <BigMetric
+                num="III"
+                label="再就職成功率"
+                value={`${(metrics.successRate.reemploymentRate * 100).toFixed(1)}%`}
+                sub={`${metrics.successRate.successfulReemployment.toLocaleString()} 人成功`}
+                trend={`平均 ${metrics.successRate.averageJobSearchDays} 日`}
+              />
+              <BigMetric
+                num="IV"
+                label="ユーザー評価"
+                value={`NPS ${metrics.satisfaction.npsScore}`}
+                sub={`好評率 ${(metrics.satisfaction.positiveRate * 100).toFixed(0)}%`}
+                trend="優秀"
+              />
+            </div>
           </div>
-        </header>
+        </div>
+      </section>
 
-        {/* 核心指标 - 4 张大卡片 */}
-        <section className="mb-8 grid gap-4 md:grid-cols-4">
-          <MetricCard
-            icon={<Users className="h-6 w-6" />}
-            label="服务覆盖"
-            value={metrics.serviceCoverage.totalUsers.toLocaleString()}
-            subValue={`35+ 占比 ${(metrics.serviceCoverage.ageAbove35Ratio * 100).toFixed(0)}%`}
-            trend={`+${metrics.serviceCoverage.newUsersThisMonth.toLocaleString()} 本月新增`}
-            color="blue"
-          />
-          <MetricCard
-            icon={<Activity className="h-6 w-6" />}
-            label="月活用户"
-            value={metrics.activity.monthlyActiveUsers.toLocaleString()}
-            subValue={`留存率 ${(metrics.activity.retentionRate * 100).toFixed(0)}%`}
-            trend="↑ 较上月 +12%"
-            color="green"
-          />
-          <MetricCard
-            icon={<Target className="h-6 w-6" />}
-            label="再就业成功率"
-            value={`${(metrics.successRate.reemploymentRate * 100).toFixed(1)}%`}
-            subValue={`${metrics.successRate.successfulReemployment.toLocaleString()} 人成功`}
-            trend={`平均求职 ${metrics.successRate.averageJobSearchDays} 天`}
-            color="purple"
-          />
-          <MetricCard
-            icon={<Heart className="h-6 w-6" />}
-            label="用户满意度"
-            value={`NPS ${metrics.satisfaction.npsScore}`}
-            subValue={`好评率 ${(metrics.satisfaction.positiveRate * 100).toFixed(0)}%`}
-            trend="优秀"
-            color="orange"
-          />
-        </section>
+      <hr className="structural-line" />
 
-        {/* 效率提升 */}
-        <section className="mb-8 grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">简历优化次数</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-600">
-                {metrics.serviceDepth.resumeRewrites.toLocaleString()}
+      {/* ========== 效率提升 ========== */}
+      <section className="py-section">
+        <div className="ma-layout">
+          <div className="ma-full grid grid-cols-1 md:grid-cols-5 gap-12 md:gap-24">
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-6 mb-8">
+                <div className="w-8 h-px bg-accent" />
+                <span className="meta-label">効率向上 · 三項目</span>
               </div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                累计帮助 {metrics.serviceDepth.resumeUploads.toLocaleString()} 份简历完成结构化
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">岗位匹配次数</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-600">
-                {metrics.serviceDepth.jobMatches.toLocaleString()}
+              <h2 className="editorial-title text-3xl font-light">
+                累積<br />サービス深度
+              </h2>
+            </div>
+
+            <div className="md:col-span-3 flex flex-col gap-12">
+              <SmallMetric
+                label="履歴書最適化回数"
+                value={metrics.serviceDepth.resumeRewrites.toLocaleString()}
+                sub={`累計 ${metrics.serviceDepth.resumeUploads.toLocaleString()} 件を構造化`}
+              />
+              <SmallMetric
+                label="求人マッチング回数"
+                value={metrics.serviceDepth.jobMatches.toLocaleString()}
+                sub="全網ボス/拉勾/猎聘/公式サイト"
+              />
+              <SmallMetric
+                label="プロジェクト孵化"
+                value={metrics.serviceDepth.projectIncubations.toLocaleString()}
+                sub="実プロジェクト支援（AI 捏造ではない）"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr className="structural-line" />
+
+      {/* ========== 用户画像 ========== */}
+      <section className="py-section">
+        <div className="ma-layout">
+          <div className="ma-full">
+            <div className="flex items-center gap-6 mb-16">
+              <div className="w-8 h-px bg-accent" />
+              <span className="meta-label">人口統計 · 四次元</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16">
+              <Distribution
+                title="年齢分布"
+                data={metrics.userDemographics.ageDistribution}
+              />
+              <Distribution
+                title="業界分布"
+                data={metrics.userDemographics.industryDistribution}
+              />
+              <Distribution
+                title="地域分布"
+                data={metrics.userDemographics.regionDistribution}
+              />
+              <Distribution
+                title="失業期間分布"
+                data={metrics.userDemographics.unemploymentDurationDistribution}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr className="structural-line" />
+
+      {/* ========== 标杆案例 ========== */}
+      <section className="py-section">
+        <div className="ma-layout">
+          <div className="ma-full">
+            <div className="flex items-center gap-6 mb-16">
+              <div className="w-8 h-px bg-accent" />
+              <span className="meta-label">成功事例 · ユーザー許諾済み</span>
+            </div>
+
+            {cases.length === 0 ? (
+              <div className="meta-label">読込中…</div>
+            ) : (
+              <div className="flex flex-col gap-12">
+                {cases.map((c, idx) => (
+                  <SuccessCaseItem key={c.id} c={c} index={idx + 1} />
+                ))}
               </div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                全网匹配（含 Boss/拉勾/猎聘/官网）
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">项目孵化数</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-purple-600">
-                {metrics.serviceDepth.projectIncubations.toLocaleString()}
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                协助用户做真实项目（非 AI 编造）
-              </p>
-            </CardContent>
-          </Card>
-        </section>
+            )}
+          </div>
+        </div>
+      </section>
 
-        {/* 用户画像 */}
-        <section className="mb-8 grid gap-4 md:grid-cols-2">
-          <DemographicsCard
-            title="年龄分布"
-            data={metrics.userDemographics.ageDistribution}
-            color="blue"
-          />
-          <DemographicsCard
-            title="行业分布"
-            data={metrics.userDemographics.industryDistribution}
-            color="green"
-          />
-          <DemographicsCard
-            title="地区分布"
-            data={metrics.userDemographics.regionDistribution}
-            color="purple"
-          />
-          <DemographicsCard
-            title="失业时长分布"
-            data={metrics.userDemographics.unemploymentDurationDistribution}
-            color="orange"
-          />
-        </section>
-
-        {/* 标杆案例 */}
-        <section className="mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-600" />
-                标杆案例（已获用户授权）
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {cases.length === 0 ? (
-                <p className="text-sm text-muted-foreground">加载中...</p>
-              ) : (
-                cases.map((c) => (
-                  <div
-                    key={c.id}
-                    className="rounded-lg border bg-gradient-to-r from-green-50 to-blue-50 p-4"
-                  >
-                    <div className="mb-2 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
-                          {c.ageRange}
-                        </span>
-                        <span className="rounded bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700">
-                          {c.industry}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          失业 {c.unemploymentMonths} 个月
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm text-muted-foreground line-through">
-                          {c.originalSalary}w
-                        </div>
-                        <div className="text-lg font-bold text-green-600">
-                          {c.newSalary}w
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-sm">
-                      <span className="font-medium">目标岗位：</span>
-                      {c.targetJob}
-                    </div>
-                    <p className="mt-2 text-sm text-slate-700">
-                      {c.storyNarrative}
-                    </p>
-                  </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </section>
-
-        {/* Footer */}
-        <footer className="mt-12 border-t pt-4 text-center text-xs text-muted-foreground">
-          数据已脱敏 · 符合《个保法》要求 · 简历原文不上传
-          <br />
-          再出发 Reinvention Suite · 政府再就业服务支持
-        </footer>
-      </div>
+      {/* ========== Footer ========== */}
+      <footer className="border-t border-border py-12">
+        <div className="ma-layout">
+          <div className="ma-full text-center meta-label">
+            データは脱敏済み · 個人情報保護法準拠 · 履歴書原文は非送信<br />
+            再出発 — 政府再就職サービス支援
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
 
-// ─── 子组件 ──────────────────────────────────────────────────────────────────
+// ─── 子组件 ────────────────────────────────────────────────────────────────
 
-function MetricCard({
-  icon,
+function BigMetric({
+  num,
   label,
   value,
-  subValue,
+  sub,
   trend,
-  color,
 }: {
-  icon: React.ReactNode;
+  num: string;
   label: string;
   value: string;
-  subValue: string;
+  sub: string;
   trend: string;
-  color: 'blue' | 'green' | 'purple' | 'orange';
 }) {
-  const colorMap = {
-    blue: 'from-blue-500 to-blue-600',
-    green: 'from-green-500 to-green-600',
-    purple: 'from-purple-500 to-purple-600',
-    orange: 'from-orange-500 to-orange-600',
-  };
-
   return (
-    <Card className="overflow-hidden">
-      <div className={`h-1 bg-gradient-to-r ${colorMap[color]}`} />
-      <CardContent className="pt-6">
-        <div className="mb-2 flex items-center justify-between text-muted-foreground">
-          <span className="text-sm">{label}</span>
-          {icon}
-        </div>
-        <div className="text-3xl font-bold">{value}</div>
-        <div className="mt-1 text-sm text-muted-foreground">{subValue}</div>
-        <div className="mt-2 text-xs font-medium text-green-600">{trend}</div>
-      </CardContent>
-    </Card>
+    <div className="bg-background p-12 flex flex-col gap-6">
+      <div className="flex items-start justify-between">
+        <span className="meta-label">{label}</span>
+        <span className="meta-label opacity-40">{num}</span>
+      </div>
+      <div className="text-display-sm editorial-title font-light">
+        {value}
+      </div>
+      <div className="flex flex-col gap-1">
+        <div className="text-sm text-muted-foreground">{sub}</div>
+        <div className="meta-label text-accent pt-2">{trend}</div>
+      </div>
+    </div>
   );
 }
 
-function DemographicsCard({
+function SmallMetric({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+}) {
+  return (
+    <div className="flex flex-col gap-3 border-t border-border pt-6">
+      <span className="meta-label">{label}</span>
+      <div className="text-5xl editorial-title font-light">{value}</div>
+      <p className="text-sm text-muted-foreground">{sub}</p>
+    </div>
+  );
+}
+
+function Distribution({
   title,
   data,
-  color,
 }: {
   title: string;
   data: Record<string, number>;
-  color: 'blue' | 'green' | 'purple' | 'orange';
 }) {
   const sorted = Object.entries(data).sort((a, b) => b[1] - a[1]);
   const max = Math.max(...Object.values(data));
 
-  const colorMap = {
-    blue: 'bg-blue-500',
-    green: 'bg-green-500',
-    purple: 'bg-purple-500',
-    orange: 'bg-orange-500',
-  };
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
+    <div className="flex flex-col gap-6">
+      <h3 className="meta-label border-b border-border pb-3">{title}</h3>
+      <div className="flex flex-col gap-4">
         {sorted.map(([key, value]) => (
-          <div key={key}>
-            <div className="mb-1 flex justify-between text-sm">
-              <span>{key}</span>
-              <span className="font-medium">
-                {(value * 100).toFixed(1)}%
-              </span>
+          <div key={key} className="flex flex-col gap-2">
+            <div className="flex justify-between items-baseline">
+              <span className="text-sm">{key}</span>
+              <span className="meta-label">{(value * 100).toFixed(1)}%</span>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-px bg-border relative">
               <div
-                className={`h-full ${colorMap[color]} transition-all`}
+                className="absolute inset-y-0 left-0 bg-foreground"
                 style={{ width: `${(value / max) * 100}%` }}
               />
             </div>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
+  );
+}
+
+function SuccessCaseItem({
+  c,
+  index,
+}: {
+  c: GovSuccessCase;
+  index: number;
+}) {
+  return (
+    <article className="grid grid-cols-12 gap-8 border-t border-border pt-8">
+      <div className="col-span-1 meta-label">{String(index).padStart(2, '0')}</div>
+
+      <div className="col-span-7 max-w-reading flex flex-col gap-4">
+        <div className="flex items-center gap-4 meta-label">
+          <span>{c.ageRange}</span>
+          <span className="opacity-30">·</span>
+          <span>{c.industry}</span>
+          <span className="opacity-30">·</span>
+          <span>失業 {c.unemploymentMonths} ヶ月</span>
+        </div>
+        <div className="meta-label">→ {c.targetJob}</div>
+        <p className="text-base leading-loose text-foreground/85">
+          {c.storyNarrative}
+        </p>
+      </div>
+
+      <div className="col-span-4 flex flex-col items-end justify-between">
+        <div className="flex flex-col items-end gap-2">
+          <div className="meta-label">転職前</div>
+          <div className="text-2xl text-muted-foreground line-through">
+            {c.originalSalary} 万
+          </div>
+        </div>
+        <div className="accent-mark" />
+        <div className="flex flex-col items-end gap-2">
+          <div className="meta-label text-accent">現在</div>
+          <div className="text-5xl editorial-title font-light text-accent">
+            {c.newSalary} <span className="text-2xl">万</span>
+          </div>
+        </div>
+      </div>
+    </article>
   );
 }

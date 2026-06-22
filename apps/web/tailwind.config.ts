@@ -1,5 +1,9 @@
 import type { Config } from 'tailwindcss';
 
+/**
+ * japanese-ma-minimalism Tailwind 配置
+ * 约束：无圆角、无阴影、无渐变、单色克制
+ */
 const config: Config = {
   darkMode: ['class'],
   content: [
@@ -11,71 +15,66 @@ const config: Config = {
   theme: {
     container: {
       center: true,
-      padding: '2rem',
+      padding: 'clamp(1.5rem, 5vw, 6rem)',
       screens: { '2xl': '1400px' },
     },
     extend: {
       colors: {
         border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
+        surface: 'hsl(var(--surface))',
         muted: {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
         },
+        subtle: 'hsl(var(--subtle))',
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        none: '0',
+        sm: '0',
+        DEFAULT: '0',
+        md: '0',
+        lg: '0',
+        full: '0', // 强制 0
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'serif'],
         mono: ['var(--font-mono)', 'monospace'],
       },
-      keyframes: {
-        'accordion-down': {
-          from: { height: '0' },
-          to: { height: 'var(--radix-accordion-content-height)' },
-        },
-        'accordion-up': {
-          from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: '0' },
-        },
+      fontSize: {
+        // 巨大显示字体
+        'display': ['clamp(3.5rem, 9vw, 9rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
+        'display-sm': ['clamp(2.5rem, 6vw, 5rem)', { lineHeight: '1.1' }],
       },
-      animation: {
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out',
+      spacing: {
+        // 8px 网格 + 慷慨间距
+        'section': 'clamp(6rem, 10vw, 16rem)',
+        'gutter': 'clamp(1.5rem, 5vw, 6rem)',
+      },
+      letterSpacing: {
+        'meta': '0.15em',
+        'editorial': '0.08em',
+      },
+      maxWidth: {
+        'reading': '58ch',
+        'prose': '65ch',
+      },
+      transitionTimingFunction: {
+        'ma': 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+      },
+      transitionDuration: {
+        '600': '600ms',
+        '800': '800ms',
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [],
 };
 
 export default config;
