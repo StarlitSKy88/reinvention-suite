@@ -67,3 +67,4 @@ data/cache/
 # User uploads (local)
 uploads/
 tmp/
+.gstack/

@@ -26,7 +26,7 @@ export default function HomePage() {
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild>
-              <Link href="/resume/upload">
+              <Link href="#features">
                 免费开始
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -43,7 +43,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="container mx-auto px-4 py-20">
+      <section id="features" className="container mx-auto px-4 py-20 scroll-mt-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="mb-12 text-center text-3xl font-bold tracking-tight md:text-4xl">
             我们做什么

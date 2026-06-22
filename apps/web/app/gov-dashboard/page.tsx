@@ -36,10 +36,21 @@ export default function GovDashboardPage() {
   async function loadDashboard() {
     setLoading(true);
     try {
-      const res = await fetch('/api/gov/dashboard?scope=city');
-      const json = await res.json();
-      if (json.success) {
-        setMetrics(json.data);
+      const [metricsRes, casesRes] = await Promise.all([
+        fetch('/api/gov/dashboard?scope=city'),
+        fetch('/api/gov/dashboard/cases?scope=city'),
+      ]);
+
+      const [metricsJson, casesJson] = await Promise.all([
+        metricsRes.json(),
+        casesRes.json(),
+      ]);
+
+      if (metricsJson.success) {
+        setMetrics(metricsJson.data);
+      }
+      if (casesJson.success) {
+        setCases(casesJson.data || []);
       }
     } catch (err) {
       console.error('加载看板失败', err);
