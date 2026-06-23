@@ -1,0 +1,429 @@
+// Reinvention Suite — Prisma Schema
+// 文档：docs/DATABASE.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// 用户与认证
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  phone         String?
+  wechatOpenId  String?   @unique
+  role          UserRole  @default(USER)
+  regionCode    String?
+  govProgramId  String?
+
+  // 关联
+  resumes            Resume[]
+  resumeVersions     ResumeVersion[]
+  factBases          FactBase[]
+  matchResults       Match[]
+  gapReports         GapReport[]
+  projectIncubations ProjectIncubation[]
+  apiKeyConfigs      ApiKeyConfig[]
+  auditLogs          AuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([regionCode])
+  @@index([govProgramId])
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  OPERATOR
+  VIEWER
+  GOV_OFFICER
+  USER
+}
+
+// ============================================
+// 简历与反幻觉改写
+// ============================================
+
+model Resume {
+  id              String   @id @default(cuid())
+  userId          String
+  // 基础信息（结构化后）
+  name            String   // 已脱敏
+  email           String   // 已脱敏
+  phone           String   // 已脱敏
+  location        String?
+  // 工作经历（JSON）
+  experiences     Json
+  // 教育
+  education       Json
+  // 技能
+  skills          String[]
+  // 项目
+  projects        Json
+  // 原始文本（敏感，仅本地）
+  rawTextHash     String?  // 哈希值用于去重
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  versions        ResumeVersion[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model ResumeVersion {
+  id            String   @id @default(cuid())
+  userId        String
+  resumeId      String
+  // 改写元数据
+  targetJobId   String?
+  targetCompany String?
+  rewriteType   RewriteType
+  // 改写内容
+  content       String
+  // 反幻觉标注（每个 bullet 来源）
+  factSources   Json
+  // 评估
+  matchScore    Int?     // 0-100
+  ageMaskApplied Boolean @default(false)
+  discrimCheckPassed Boolean @default(false)
+  // 用户反馈
+  userAccepted  Boolean?
+  userFeedback  String?
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume        Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([resumeId])
+  @@index([targetJobId])
+}
+
+enum RewriteType {
+  GENERAL
+  FOR_JD
+  AGE_MASKED
+  DISCRIM_SAFE
+}
+
+model FactBase {
+  id            String   @id @default(cuid())
+  userId        String
+  // 项目事实
+  projects      Json
+  // 技能事实
+  skills        Json
+  // 工作经历事实
+  experiences   Json
+  // 自我描述
+  summary      String  @default("")
+  // 确认状态（反幻觉核心）
+  userConfirmed Boolean @default(false)
+  confirmedAt  DateTime?
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ============================================
+// 岗位与匹配
+// ============================================
+
+model JobPosting {
+  id            String   @id @default(cuid())
+  title         String
+  company       String
+  companyName   String?  // 公司全名
+  location      String?
+  // 薪资
+  salaryMin     Int?
+  salaryMax     Int?
+  currency      String?  @default("CNY")
+  // JD 内容
+  description   String
+  requirements  String[]
+  keywords      String[]
+  // 元数据
+  source        JobSource
+  sourceUrl     String
+  applyUrl      String?
+  postedAt      DateTime?
+  industry      String?
+  seniorityLevel String?
+  // 公司画像
+  companySize   String?
+  companyProfile Json?
+
+  matches       Match[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([source, sourceUrl])
+  @@index([company])
+  @@index([industry])
+  @@index([location])
+  @@index([source])
+}
+
+enum JobSource {
+  COMPANY_WEBSITE
+  BOSS_ZHIPIN
+  LAGOU
+  LIEPIN
+  LINKEDIN
+  EXA
+  ZHILIAN
+  CCGP
+  HRSS_BULLETIN
+}
+
+model Match {
+  id              String   @id @default(cuid())
+  userId          String
+  jobId           String
+  score           Int      // 0-100
+  matchedKeywords String[]
+  missingKeywords String[]
+  reasoning       String?
+  // 用户反馈
+  viewed           Boolean  @default(false)
+  applied          Boolean  @default(false)
+  interviewInvited Boolean  @default(false)
+  offerReceived    Boolean  @default(false)
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job             JobPosting @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  computedAt      DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+  @@index([score])
+}
+
+model GapReport {
+  id              String   @id @default(cuid())
+  userId          String
+  jobId           String?  // 可选：针对特定岗位
+  jobTitle        String?
+  matchScore      Int
+  missingSkills   Json
+  missingExperience String[]
+  optimizationSuggestions Json
+  rewrittenResume String?  // 改写后的简历
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([jobId])
+}
+
+// ============================================
+// 项目孵化器
+// ============================================
+
+model ProjectIncubation {
+  id            String   @id @default(cuid())
+  userId        String
+  templateId    String
+  templateName  String
+  status        ProjectStatus @default(PLANNING)
+  milestones    Json
+  deliverables  Json
+  resumeDescription String?
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([templateId])
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+}
+
+// ============================================
+// 政府看板（标杆案例 + 机会）
+// ============================================
+
+model GovSuccessCase {
+  id                  String   @id @default(cuid())
+  // 脱敏
+  ageRange            String
+  industry            String
+  unemploymentMonths  Int
+  targetJob           String
+  originalSalary      Int
+  newSalary           Int
+  storyNarrative      String
+  // 元数据
+  regionCode          String?
+  govProgramId        String?
+  permissionGranted   Boolean  @default(false)
+  // 公开状态
+  isPublic            Boolean  @default(false)
+
+  createdAt           DateTime @default(now())
+
+  @@index([regionCode])
+  @@index([govProgramId])
+  @@index([isPublic])
+}
+
+model GovOpportunity {
+  id              String   @id @default(cuid())
+  // 来源
+  source          OpportunitySource
+  sourceUrl       String
+  // 内容
+  title           String
+  buyer           String   // 采购方
+  location        String?
+  budget          String?  // 预算金额
+  description     String?
+  publishDate     DateTime?
+  deadline        DateTime?
+  // 评分
+  keywordScore    Int
+  budgetScore     Int
+  freshnessScore  Int
+  regionScore     Int
+  buyerTypeScore  Int
+  competitionScore Int
+  totalScore      Int
+  recommendation  String?  // high / medium / low
+  // 状态
+  status          OpportunityStatus @default(NEW)
+  // 跟进
+  assignedTo      String?
+  notes           String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([source, sourceUrl])
+  @@index([totalScore])
+  @@index([recommendation])
+  @@index([status])
+}
+
+enum OpportunitySource {
+  CCGP              // 中国政府采购网
+  HRSS_BULLETIN     // 人社局公告
+  BIDDING_NETWORK   // 招投标网
+  MANUAL
+}
+
+enum OpportunityStatus {
+  NEW
+  CONTACTED
+  PROPOSAL_SENT
+  NEGOTIATING
+  WON
+  LOST
+}
+
+// ============================================
+// 行为埋点 + 审计
+// ============================================
+
+model AnalyticsEvent {
+  id              String   @id @default(cuid())
+  anonymousUserId String   // 脱敏后的用户 ID
+  type            String   // event type
+  properties      Json
+  regionCode      String?
+  govProgramId    String?
+  source          String?
+
+  createdAt       DateTime @default(now())
+
+  @@index([type])
+  @@index([anonymousUserId])
+  @@index([regionCode])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  userId        String?
+  action        String   // LOGIN / API_CALL / DATA_MODIFY / ...
+  resource      String?
+  resourceId    String?
+  // 请求信息
+  ipAddress     String?
+  userAgent     String?
+  // 详情
+  metadata      Json?
+  status        String?  // success / failure
+  errorMessage  String?
+
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// ============================================
+// API Key 配置（加密存储）
+// ============================================
+
+model ApiKeyConfig {
+  id            String   @id @default(cuid())
+  userId        String
+  provider      String   // minimax / claude / deepseek / custom
+  enabled       Boolean  @default(false)
+  // 加密的 API Key
+  encryptedKey  String?  // AES-256-GCM 加密
+  keyMask       String   // 显示用（最后 4 位）
+  baseUrl       String?
+  model         String?
+  highQualityOnly Boolean @default(false)
+  // 元数据
+  lastTestedAt  DateTime?
+  lastTestResult String?  // success / failure
+  // 用量统计
+  totalCalls    Int      @default(0)
+  totalTokens   Int      @default(0)
+  totalCost     Float    @default(0)
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, provider])
+  @@index([userId])
+}
