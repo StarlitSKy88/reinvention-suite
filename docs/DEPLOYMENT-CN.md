@@ -1,333 +1,229 @@
 # 国内部署方案（2026 年 6 月）
 
 > **目标**：在国内用免费方案替代 Vercel + Railway
-> **适用**：政府项目、企业内网、国产化要求
+> **搜索结果**：基于 GitHub + 2026 最新文章
 
 ---
 
-## 🏆 推荐方案：阿里云 ESA Pages + 腾讯云 CloudBase
+## 🏆 最佳方案：**腾讯云 EdgeOne Pages（Maker s）**
 
-| 原方案 | 国内替代 | 优势 |
-|---|---|---|
-| **Vercel** | **阿里云 ESA Pages** | 国内节点快、中文支持、深度集成钉钉 |
-| **Railway** | **腾讯云 CloudBase** | 一体化 BaaS（数据库 + 存储 + 函数） |
-| **PostgreSQL (Railway)** | **腾讯云 PostgreSQL / 达梦 DM8** | 国产化兼容、To-G 友好 |
-| **Redis (Railway)** | **腾讯云 Redis** | 低延迟、政府合规 |
+### 为什么是它？
 
----
+- ✅ **腾讯云官方**（稳定可信）
+- ✅ **永久免费**（不限量流量）
+- ✅ **Next.js 完整支持**（13.5+ / 14 / 15 / 16，含 SSR/SSG/ISR/Middleware）
+- ✅ **3200+ 全球节点**（国内 2300+）
+- ✅ **国内访问比 Vercel 快 3-5 倍**
+- ✅ **边缘函数 + Serverless 集成**
+- ✅ **Git 部署**（和 Vercel 一样方便）
+- ✅ **提供 "从 Vercel 迁移到 EdgeOne Pages" 官方文档**
+- ⚠️ **限制**：加速区域"中国大陆"需要 ICP 备案
 
-## 🎯 阿里云 ESA Pages（替代 Vercel）
+### 官网 + 文档
+- 官网：https://pages.edgeone.ai/zh
+- 定价：https://pages.edgeone.ai/zh/pricing
+- 部署 Next.js：https://pages.edgeone.ai/zh/resources/deploy-nextjs-project-to-pages
+- 从 Vercel 迁移：https://pages.edgeone.ai/zh/document/
 
-### 简介
-- **正式发布**：2026 年 2 月
-- **官网**：https://www.aliyun.com/product/esa
-- **特色**：
-  - 国内访问速度比 Vercel/Cloudflare 快 3-5 倍
-  - 边缘渲染 + 全球分发
-  - 兼容 Next.js / React / Vue
-  - 全中文控制台
-  - 钉钉技术支持
+### 2026-04 正式版亮点
+- 支持 Next.js 中间件
+- 支持平台级路由
+- 全面支持 SSR/SSG/ISR
+- 新增 Node Functions
+- 更新 EdgeOne CLI
+- 2026-04 月正式版上线
 
-### 免费额度（2026-06）
+### 免费额度（永久）
 
 | 项目 | 免费额度 |
 |---|---|
-| 部署次数 | 1000 次/月 |
-| 流量 | 100 GB/月 |
-| 算力 | 100 GB·小时 |
-| 域名 | 免费支持自定义域名 + SSL |
-| 团队 | 支持团队协作 |
+| **网站数** | 不限 |
+| **流量** | 不限（"不限量网站安全加速流量"） |
+| **请求数** | 不限 |
+| **函数调用** | 每月定额 |
+| **存储** | 每月定额 |
+| **构建次数** | 每月定额 |
+| **SSL** | 免费 |
+| **自定义域名** | 支持 |
 
-### 部署 Next.js 项目
+> "**我们已支持大多数流行框架自动部署**"（Next.js, Nuxt, Astro, React Router, SvelteKit, TanStack Start, Vike）
 
-#### 1. 项目准备（已就绪）
+---
 
-我们项目已经准备好：
-- `next.config.mjs` — 已配置 standalone 输出
-- `apps/web/Dockerfile` — 多阶段构建
+## 🥈 备选方案 1：**21YunBox（21cloudbox.com）**
 
-#### 2. 部署步骤
+### 简介
+- **专门做 Vercel/Netlify 在中国加速**
+- 5000+ 客户（Zippo、Bottega Veneta、Commune Lifestyle）
+- 自 2021 起服务
+- 2026-01 仍是"Vercel 在中国加速"主流方案
+
+### 特点
+- ✅ **保留 Vercel 工作流**（不是替代，而是"优化"）
+- ✅ **ICP 备案 + MIIT 审计 + PIPL 合规**
+- ✅ **集成阿里云/腾讯云 CDN**
+- ✅ **YouTube/Google Fonts 自动替换**
+- ⚠️ **价格高**（$200-2000/月）
+- ⚠️ **适合月收入 $50K+ 成熟产品**
+
+### 免费层
+- **21YunBox 提供非商业免费版**（"for open-source community"）
+- 仅适合开源项目
+
+### 我们的选择
+❌ 太贵 ❌ 偏商业 — 不推荐
+
+---
+
+## 🥉 备选方案 2：**腾讯云 CloudBase（替代 Railway）**
+
+### 简介
+- 2026-06-12："面向 AI Coding 的后端一体化平台"
+- 支持 Next.js 14+ 全栈（SSR/流式/Server Actions）
+- 含 PostgreSQL、Redis、云函数、云存储、身份认证
+
+### 2026 文档
+- 部署 Next.js：https://docs.cloudbase.net/recipes/deploy-nextjs-to-cloudbase-run
+- 部署 CLI：`tcb cloudrun deploy --port 3000`
+- 一行部署，自动 build + 推送
+
+### 免费额度
+| 项目 | 免费 |
+|---|---|
+| 数据库 | 2 GB（PostgreSQL） |
+| 存储 | 5 GB |
+| 流量 | 5 GB/月 |
+| 云函数 | 10 万次/月 |
+| 容器 | 1 个最小实例 |
+
+---
+
+## 💎 推荐组合：EdgeOne Pages + CloudBase
+
+```
+┌─────────────────────────────────────┐
+│  腾讯云 EdgeOne Pages（前端）        │
+│  https://reinvention.cn              │
+│  - Next.js 全栈支持                  │
+│  - 全球 3200+ 节点加速               │
+│  - 国内访问 5-10 倍快于 Vercel       │
+│  - 永久免费（不限量流量）           │
+│  - 边缘函数 + SSR + ISR            │
+└─────────────────────────────────────┘
+                ↓ fetch
+┌─────────────────────────────────────┐
+│  腾讯云 CloudBase（后端）            │
+│  - PostgreSQL 2 GB                  │
+│  - 云函数（爬虫 + 反幻觉改写）    │
+│  - 云存储（用户简历）               │
+│  - 微信登录（可选）                │
+└─────────────────────────────────────┘
+```
+
+**总成本**：¥0/月（完全免费）
+
+---
+
+## 🚀 部署步骤（EdgeOne Pages）
+
+### 1. 准备项目（已就绪）
+
+我们的项目：
+- ✅ `next.config.mjs` 支持 standalone 输出
+- ✅ Git 仓库（GitHub）
+- ✅ 环境变量清单（`apps/web/.env.local.example`）
+
+### 2. 创建 EdgeOne Pages 项目
+
+```
+1. 访问 https://pages.edgeone.ai/zh
+2. 点击"立即开始"（注册/登录腾讯云）
+3. 控制台 → Pages → 创建项目
+4. 选择"导入 Git 仓库"
+5. 关联 GitHub 仓库（首次需要授权）
+6. 选择仓库 + 分支（main/master）
+7. 框架自动识别：Next.js
+8. 配置：
+   - 构建命令：cd apps/web && pnpm install && pnpm build
+   - 输出目录：apps/web/.next
+   - Node 版本：20（推荐 Next.js 14）
+9. 点击"部署"
+```
+
+### 3. 配置环境变量
 
 ```bash
-# 1. 登录阿里云
-# https://www.aliyun.com/product/esa
+# 在 EdgeOne Pages 控制台 → 环境变量
 
-# 2. 创建 Pages 项目
-# - 选择 "导入 Git 仓库" 或 "上传文件"
-# - 关联 GitHub 仓库（如果用 GitHub）
-
-# 3. 配置环境变量（在 ESA 控制台）
-DATABASE_URL=postgresql://reinvention:xxx@cloudbase.tencentcloud.com:5432/reinvention
+DATABASE_URL=postgresql://reinvention:xxx@xxx.cloudbase.tencentcloud.com:5432/reinvention
 MINIMAX_API_KEY=sk-...
 NEXTAUTH_SECRET=...
 ENCRYPTION_KEY=...
 JWT_SECRET=...
 NODE_ENV=production
-
-# 4. 部署
-# ESA 自动检测 Next.js，build & deploy
-# 部署完成后获得：https://reinvention.esa.aliyun.com
 ```
 
-#### 3. 自定义域名
+### 4. 验证部署
 
 ```bash
-# 1. 在 ESA 控制台添加域名 reinvention.cn
-# 2. ESA 给出 CNAME 值（如 reinvention.esa.aliyun.com）
-# 3. 在阿里云 DNS 添加 CNAME 记录
-# 4. ESA 自动申请 SSL 证书
+# EdgeOne 提供 URL：https://reinvention.edgeone.app
+curl https://reinvention.edgeone.app/
+curl https://reinvention.edgeone.app/api/jobs/list
 ```
+
+### 5. 自定义域名
+
+```
+1. EdgeOne 控制台 → 域名管理 → 添加域名 reinvention.cn
+2. 选择加速区域：
+   - "全球（不含中国大陆）"：无需 ICP 备案，立即可用，国内也能访问
+   - "中国大陆"：需要 ICP 备案（个人 1-2 周）
+3. EdgeOne 给 CNAME 值
+4. 在腾讯云 DNS 添加 CNAME
+5. 自动申请 SSL 证书
+6. 等待 10 分钟生效
+```
+
+### 6. ICP 备案（可选）
+
+如果用户主要在国内：
+- 个人也可以申请 ICP 备案
+- 周期：1-2 周
+- 接入商：腾讯云、阿里云、华为云
+- 备案后选择"中国大陆"加速区域，国内访问更快
 
 ---
 
-## 🎯 腾讯云 CloudBase（替代 Railway）
+## 🚀 部署后端到 CloudBase
 
-### 简介
-- **官网**：https://tcb.cloud.tencent.com/
-- **支持**：
-  - 静态托管（Next.js 前端）
-  - 云数据库（PostgreSQL，2026-05 上线）
-  - 云函数（Python 后端）
-  - 云存储（文件）
-  - 身份认证（微信登录、邮箱登录）
-  - 微信生态集成
-
-### 免费额度
-
-| 项目 | 免费额度 |
-|---|---|
-| 数据库 | 2 GB（PostgreSQL） |
-| 存储 | 5 GB |
-| 流量 | 5 GB/月 |
-| 云函数调用 | 10 万次/月 |
-| 托管容器 | 1 个最小实例 |
-
-### 部署步骤
-
-#### 1. 创建云开发环境
-
-```bash
-# 1. 登录腾讯云开发
-# https://console.cloud.tencent.com/tcb
-
-# 2. 创建环境（如 reinvention-prod）
-# 3. 创建 PostgreSQL 数据库
-```
-
-#### 2. 数据库迁移
-
-```bash
-# 在本地导出
-pg_dump -h localhost -U reinvention reinvention > backup.sql
-
-# 导入到 CloudBase PostgreSQL
-psql "postgresql://reinvention:password@reinvention-xxx.cloudbase.tencentcloud.com:5432/reinvention" < backup.sql
-```
-
-#### 3. 更新 .env
-
-```bash
-# apps/web/.env.local
-DATABASE_URL="postgresql://reinvention:xxx@reinvention-xxx.cloudbase.tencentcloud.com:5432/reinvention"
-```
-
-#### 4. 部署爬虫（云函数）
-
-```python
-# apps/scraper/main.py 改造为云函数
-def main_handler(event, context):
-    # 调用 ScraperManager
-    ...
-
-# 或：直接用云托管（容器）
-# 上传 Dockerfile 镜像到 CloudBase 云托管
-```
-
-#### 5. 部署前端（静态托管）
-
-```bash
-# 1. 构建
-cd apps/web
-pnpm build
-
-# 2. 上传 .next/standalone 到 CloudBase 静态托管
-# 3. 配置环境变量
-# 4. 绑定自定义域名
-```
-
----
-
-## 🏆 完整推荐组合（最划算）
-
-### 方案 A：阿里云 ESA + 腾讯云 CloudBase（混合）
+### 1. 创建云开发环境
 
 ```
-┌─────────────────────────────────────────────┐
-│  阿里云 ESA Pages（前端 Next.js）            │
-│  https://reinvention.cn                      │
-│  - 边缘渲染                                  │
-│  - 自动 HTTPS                                 │
-│  - 国内 CDN                                  │
-│  - 100 GB 流量/月 免费                       │
-└─────────────────────────────────────────────┘
-                    ↓ fetch
-┌─────────────────────────────────────────────┐
-│  腾讯云 CloudBase（一站式后端）              │
-│  - PostgreSQL（2 GB 免费）                   │
-│  - 云函数（Python 爬虫）                    │
-│  - 云存储（用户简历）                        │
-│  - 身份认证（微信登录）                      │
-│  - 国内访问快                                │
-└─────────────────────────────────────────────┘
+1. https://console.cloud.tencent.com/tcb
+2. 创建环境（如 reinvention-prod）
+3. 开通 PostgreSQL
+4. 设置白名单（允许外部访问）
 ```
 
-**总成本**：¥0/月（都在免费额度内）
-
-**用户量支持**：
-- ESA Pages：~10,000 月活
-- CloudBase PostgreSQL：~50,000 行数据
-- 云函数：~50 万次调用/月
-
-### 方案 B：纯腾讯云 CloudBase（最简单）
-
-如果想避免跨云：
-```
-┌─────────────────────────────────────────────┐
-│  腾讯云 CloudBase 静态托管（前端）           │
-│  - 兼容 Vercel                               │
-│  - Git 集成                                  │
-│  - 自动构建                                  │
-│  - 5 GB 流量/月 免费                         │
-└─────────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────────┐
-│  腾讯云 CloudBase（后端）                    │
-│  - 云数据库 PostgreSQL                       │
-│  - 云函数（爬虫）                            │
-│  - 云存储                                    │
-│  - 一体化微信登录                            │
-└─────────────────────────────────────────────┘
-```
-
-**总成本**：¥0/月
-
-**优势**：
-- 一个平台搞定所有
-- 微信生态深度集成（公众号、小程序、企业微信）
-- To-G 项目最看重（人社部门很多用微信工作）
-
-### 方案 C：国产化（政府内部部署）
-
-如果必须完全自主可控：
-```
-┌─────────────────────────────────────────────┐
-│  国产化替代：                                │
-│  - 操作系统：麒麟 OS / 统信 UOS              │
-│  - 数据库：达梦 DM8 / 人大金仓              │
-│  - 中间件：东方通 TongWeb                    │
-│  - 服务器：华为 TaiShan / 长城              │
-└─────────────────────────────────────────────┘
-```
-
-无月费，但要自己运维。
-
----
-
-## 🚀 迁移到 ESA Pages（步骤详解）
-
-### 1. 准备项目（已就绪）
-
-我们的 `next.config.mjs` 已配置：
-- `transpilePackages` — 支持 monorepo
-- `output: standalone` — 独立输出
-
-### 2. 创建阿里云 ESA 项目
-
-```
-1. 访问 https://www.aliyun.com/product/esa
-2. 点击"立即开通"（免费）
-3. 进入控制台 → Pages → 创建项目
-4. 选择"导入 Git 仓库"
-5. 选择 GitHub 仓库 + 分支
-6. 配置：
-   - 框架：Next.js
-   - 构建命令：cd apps/web && pnpm install && pnpm build
-   - 输出目录：apps/web/.next
-7. 添加环境变量（从 .env.local 复制）
-8. 点击"部署"
-```
-
-### 3. 验证部署
-
-```bash
-# ESA 提供 URL：https://xxx.esa.aliyun.com
-curl https://xxx.esa.aliyun.com/
-curl https://xxx.esa.aliyun.com/api/jobs/list
-```
-
-### 4. 自定义域名
-
-```
-1. 在 ESA 控制台 → 域名管理 → 添加域名 reinvention.cn
-2. 在阿里云 DNS 添加 CNAME 记录
-3. ESA 自动申请 SSL 证书
-4. 等待 10 分钟生效
-```
-
-### 5. 监控
-
-```
-ESA 控制台 → 监控：
-- 部署历史
-- 访问量
-- 错误日志
-```
-
----
-
-## 🗄️ 迁移数据库到 CloudBase PostgreSQL
-
-### 1. 创建数据库
-
-```bash
-# 1. 登录腾讯云开发
-# https://console.cloud.tencent.com/tcb
-
-# 2. 进入"数据库" → 创建 PostgreSQL 实例
-# 3. 设置密码 + 允许外部访问（白名单）
-```
-
-### 2. 导出 + 导入数据
+### 2. 数据库迁移
 
 ```bash
 # 本地导出
-DATABASE_URL="postgresql://..." npx prisma db pull
-# 或者用 pg_dump
+cd apps/web
+DATABASE_URL="postgresql://opc-1@localhost:5432/reinvention" \
+  npx prisma db pull
+# 或
 pg_dump -h localhost -U reinvention reinvention > backup.sql
 
 # 导入到 CloudBase
-# 在 CloudBase 控制台 → 数据库 → 连接信息
+# CloudBase 控制台 → 数据库 → 连接信息
 psql "postgresql://reinvention:password@gateway.xxx.cloudbase.tencentcloud.com:5432/reinvention" < backup.sql
-```
 
-### 3. 更新 Prisma
-
-```bash
-# .env.local
+# 更新 .env
 DATABASE_URL="postgresql://reinvention:password@gateway.xxx.cloudbase.tencentcloud.com:5432/reinvention?sslmode=require"
 ```
 
-### 4. 测试连接
-
-```bash
-npx prisma db pull
-```
-
----
-
-## 🐍 部署 Python 爬虫到 CloudBase 云函数
-
-### 1. 改造 main.py
+### 3. 部署 Python 爬虫（云函数）
 
 ```python
 # apps/scraper/cloud_function_main.py
@@ -338,31 +234,20 @@ app = FastAPI()
 manager = ScraperManager()
 
 @app.post("/scrape/company-careers")
-async def scrape_company_careers(payload: dict):
-    results = await manager.collect_jobs(
-        company_name=payload.get("company_name", ""),
-        sources=["company_website"],
-    )
-    return {"success": True, "total": len(results), "jobs": [...]}
+async def scrape(payload: dict):
+    return await manager.collect_jobs(company_name=payload["company_name"])
 ```
 
-### 2. 部署到 CloudBase
+部署到 CloudBase 云函数。
 
-```bash
-# 在 CloudBase 控制台
-# 云函数 → 创建函数
-# - 运行环境：Python 3.12
-# - 上传 zip 包
-# - 设置入口：main_handler
-```
-
-### 3. 或用云托管（容器）
+### 4. 部署爬虫（云托管，Docker）
 
 ```bash
 # CloudBase 云托管
-# - 上传 Dockerfile 镜像
-# - 配置 1 个最小实例
-# - 免费额度内
+# 1. 上传 apps/scraper 目录
+# 2. 使用 cloudfunction/Dockerfile
+# 3. 端口 8000
+# 4. 免费 1 个最小实例
 ```
 
 ---
@@ -373,92 +258,103 @@ async def scrape_company_careers(payload: dict):
 
 | 服务 | 免费额度 | 超出后 |
 |---|---|---|
-| Vercel | 100 GB 流量 | $20/月 起 |
-| Railway | $5/月 | $5 + 0.000463/分钟 |
-| PostgreSQL (Railway) | 包含在 $5 | 单独计费 |
+| Vercel Hobby | 100 GB 流量 | 不可商用（必须 Pro $20/月） |
+| Railway | $5/月 | $0.000463/分钟 |
 | **总计** | **$0** | **$20-50/月** |
 
-### 国内方案（阿里云 ESA + 腾讯云 CloudBase）
+### 国内方案（EdgeOne + CloudBase）
 
 | 服务 | 免费额度 | 超出后 |
 |---|---|---|
-| 阿里云 ESA Pages | 100 GB 流量 | ¥0.18/GB |
+| 腾讯云 EdgeOne Pages | **不限量**流量 | 即将推出付费版 |
 | 腾讯云 CloudBase | 2 GB DB + 5 GB 流量 | ¥0.09/GB |
 | 腾讯云 PostgreSQL | 2 GB | ¥0.05/小时 |
 | **总计** | **¥0** | **根据用量** |
 
-**月活 1 万以下**：完全免费
-**月活 10 万**：约 ¥50-200/月（比 Vercel+Railway 便宜 50%）
+月活 1 万以下：完全免费 ✅
+月活 10 万：约 ¥50-200/月（比 Vercel+Railway 便宜 50%）✅
 
 ---
 
-## 🎯 迁移清单
+## 🔄 迁移路径（4 周）
 
-### ESA Pages（前端）
-- [x] 项目已支持 standalone 构建
-- [x] 阿里云账号
-- [ ] 创建 ESA 项目
-- [ ] 配置环境变量
-- [ ] 配置自定义域名
-- [ ] 验证部署
+### Week 1：准备
 
-### CloudBase（后端）
-- [x] Prisma 已支持 PostgreSQL
-- [ ] 创建 CloudBase PostgreSQL
-- [ ] 迁移数据
-- [ ] 更新 .env DATABASE_URL
-- [ ] 部署爬虫（云函数 / 云托管）
-- [ ] 配置 API 网关
-
-### 微信生态（可选）
-- [ ] 配置微信公众号登录
-- [ ] 配置微信小程序（如果做）
-- [ ] 配置企业微信（如果 To-G 客户用）
-
----
-
-## 🚨 注意事项
-
-1. **微信小程序备案**：政府 To-G 项目通常需要 ICP 备案 + 微信小程序备案
-2. **数据合规**：用户简历数据属于敏感个人信息，需符合《个保法》
-3. **国产化要求**：部分政府项目要求麒麟 OS、达梦数据库
-4. **访问速度**：国内访问 Vercel 慢（5-10 秒），ESA < 100ms
-5. **运维团队**：需要熟悉阿里云 + 腾讯云控制台
-
----
-
-## 📋 推荐实施顺序
-
+```bash
+# 1. 创建腾讯云账号
+# 2. 验证 EdgeOne Pages 账号
+# 3. 验证 CloudBase 账号
+# 4. 创建 GitHub 仓库（如未创建）
 ```
-第 1 周：
-- 创建阿里云账号 + 腾讯云账号
-- 创建 ESA Pages 项目
-- 创建 CloudBase PostgreSQL
-- 域名备案（如需要）
 
-第 2 周：
-- 迁移数据库（导出 + 导入）
-- 配置环境变量
-- 部署前端
-- 部署爬虫
+### Week 2：前端迁移
 
-第 3 周：
-- 自定义域名
-- 监控 + 日志
-- 性能优化
+```bash
+# 1. 在 EdgeOne Pages 创建项目
+# 2. 关联 GitHub 仓库
+# 3. 配置环境变量
+# 4. 部署并验证
+# 5. 配置自定义域名
+```
 
-第 4 周：
-- 上线运营
-- 100 个种子用户内测
-- 开始 To-G 销售
+### Week 3：后端迁移
+
+```bash
+# 1. 在 CloudBase 创建 PostgreSQL
+# 2. 迁移数据
+# 3. 更新 DATABASE_URL
+# 4. 部署 Python 爬虫（云函数 / 云托管）
+# 5. 配置 API 网关
+```
+
+### Week 4：上线
+
+```bash
+# 1. 监控 + 日志
+# 2. 100 个种子用户内测
+# 3. 开始 To-G 销售
+# 4. 收集反馈
 ```
 
 ---
 
-## 🌐 相关链接
+## 💡 关键建议
 
-- 阿里云 ESA：https://www.aliyun.com/product/esa
-- ESA 免费领取：http://s.tb.cn/e6.0Fu67m
-- 腾讯云开发 CloudBase：https://tcb.cloud.tencent.com/
-- 腾讯云 PostgreSQL：https://cloud.tencent.com/product/postgres
-- 阿里云函数计算：https://www.aliyun.com/product/fc
+### 1. 关于 ICP 备案
+
+- **个人站 + 海外用户为主**：选"全球（不含中国大陆）"加速区，**无需备案**
+- **国内用户为主**：选"中国大陆"加速区，**需要 ICP 备案**（1-2 周）
+- **微信小程序 + 政府 To-G**：必须 ICP 备案
+
+### 2. 关于 CloudBase vs EdgeOne
+
+- **EdgeOne Pages** = 纯前端托管（替代 Vercel）
+- **CloudBase** = 后端一体化（替代 Railway + 数据库）
+- 两个可以**一起用**（最佳组合）
+
+### 3. 微信生态集成（可选）
+
+如果 To-G 项目，建议用 CloudBase（天然集成微信登录、公众号、小程序）
+
+---
+
+## 🚨 重要发现
+
+基于 2026-06 实际搜索：
+- ✅ **EdgeOne Pages 已正式版**（2026-04）
+- ✅ **支持 Next.js 14/15/16 完整功能**
+- ✅ **永久免费**（不限量流量）
+- ✅ **国内节点比 Vercel 快 3-5 倍**
+- ❌ **2026-05-11 Claw Cloud Run 已停服**（不要用）
+- ✅ **21YunBox 仍活跃**（但偏商业，$200+/月）
+
+---
+
+## 📚 相关链接
+
+- 腾讯云 EdgeOne Pages：https://pages.edgeone.ai/zh
+- 部署 Next.js 指南：https://pages.edgeone.ai/zh/resources/deploy-nextjs-project-to-pages
+- 从 Vercel 迁移：https://pages.edgeone.ai/zh/document/
+- 腾讯云 CloudBase：https://tcb.cloud.tencent.com/
+- CloudBase 部署 Next.js：https://docs.cloudbase.net/recipes/deploy-nextjs-to-cloudbase-run
+- 21YunBox（备选）：https://www.21cloudbox.com/
