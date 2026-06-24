@@ -55,70 +55,20 @@ interface ProcessedResume {
 }
 
 const MOCK_JOBS: JobMatch[] = [
+  // FALLBACK ONLY: 当 IndexedDB 没有简历且 API 失败时使用
+  // 实际生产中应从 DB 读取，详见 /api/jobs/list
   {
-    id: 'mock-1',
-    title: 'AI 产品经理',
-    company: '某 AI 创业公司',
-    location: '北京',
-    salary: '50-80K · 16薪',
-    source: 'BOSS 直聘',
-    url: 'https://www.zhipin.com/',
-    matchScore: 87,
-    matchedKeywords: ['AI', '产品设计', '数据分析', '项目管理'],
-    missingKeywords: ['LLM', 'Prompt Engineering', 'RAG'],
-    reasoning: '技能高度匹配，3 个新兴技能需补全',
-  },
-  {
-    id: 'mock-2',
-    title: '高级产品经理',
-    company: '某 SaaS 公司',
-    location: '上海',
-    salary: '40-60K · 14薪',
-    source: '拉勾',
-    url: 'https://www.lagou.com/',
-    matchScore: 78,
-    matchedKeywords: ['产品设计', 'B 端', '增长', '数据分析'],
-    missingKeywords: ['SaaS', 'PLG'],
-    reasoning: 'B 端经验匹配，SaaS 专业度可提升',
-  },
-  {
-    id: 'mock-3',
-    title: '产品总监',
-    company: '某传统企业数字化部门',
-    location: '深圳',
-    salary: '60-90K · 14薪',
-    source: '猎聘',
-    url: 'https://www.liepin.com/',
-    matchScore: 72,
-    matchedKeywords: ['团队管理', '战略', '数字化', '用户研究'],
-    missingKeywords: ['AI', '数据驱动'],
-    reasoning: '管理经验匹配，AI 能力是加分项',
-  },
-  {
-    id: 'mock-4',
-    title: '产品专家',
-    company: '某互联网大厂',
-    location: '杭州',
-    salary: '45-70K · 15薪',
-    source: '公司官网',
-    url: 'https://example.com/careers',
-    matchScore: 81,
-    matchedKeywords: ['产品设计', '用户研究', '数据分析', '项目管理'],
-    missingKeywords: ['大厂经验'],
-    reasoning: '技能完全匹配，大厂背景可加分',
-  },
-  {
-    id: 'mock-5',
-    title: '产品运营经理',
-    company: '某跨境电商',
-    location: '广州',
-    salary: '35-55K · 13薪',
-    source: 'LinkedIn',
-    url: 'https://www.linkedin.com/jobs/',
-    matchScore: 65,
-    matchedKeywords: ['运营', '数据分析', '项目管理'],
-    missingKeywords: ['跨境电商', '海外市场'],
-    reasoning: '基础能力匹配，行业经验需补全',
+    id: 'fallback-1',
+    title: '产品专员（演示数据）',
+    company: '请先上传简历',
+    location: '全国',
+    salary: '20-30K',
+    source: '系统',
+    url: '/resume/upload',
+    matchScore: 0,
+    matchedKeywords: [],
+    missingKeywords: [],
+    reasoning: '⚠️ 演示模式：请先上传简历以获得个性化匹配',
   },
 ];
 
@@ -145,17 +95,17 @@ function MatchJobsPage() {
             id: data.id,
             structured: data.structured,
           });
-          // 真实匹配（这里用 mock，实际应调用匹配引擎）
+          // 真实匹配：从 DB 读取岗位 + 真实匹配引擎
           const realMatches = await matchJobs(data.structured);
           setMatches(realMatches);
-        } else {
-          // 没有简历数据，用 mock
-          setMatches(MOCK_JOBS);
+          return;
         }
-      } else {
-        // 没有 analysisId，用 mock 演示
-        setMatches(MOCK_JOBS);
       }
+
+      // 2. 无简历或读取失败：用 demo skills 调真实 API
+      // （这样即使没上传简历，UI 也能展示真实匹配）
+      const realMatches = await matchJobs({ skills: [] });
+      setMatches(realMatches);
     } catch (err) {
       console.error('加载失败', err);
       setMatches(MOCK_JOBS);
@@ -168,50 +118,48 @@ function MatchJobsPage() {
    * 真实匹配函数
    * 输入：简历结构化数据
    * 输出：匹配岗位列表
+   *
+   * 真实数据源：PostgreSQL.JobPosting
+   * 真实计算：lib/match/engine.ts
    */
   async function matchJobs(structured: any): Promise<JobMatch[]> {
     try {
-      // 调用匹配引擎（来自 lib/match/engine.ts）
-      const { matchJobs: engine } = await import('@/lib/match/engine');
+      // 直接调用真实匹配 API（接受用户技能，返回真实匹配）
+      // demo skills 用于无简历时的演示
+      const DEMO_SKILLS = [
+        '产品设计', '数据分析', 'AI', '项目管理',
+        '用户研究', 'B 端', '增长', 'LLM', '团队管理',
+      ];
 
-      // Mock 岗位库（实际应从 DB 或爬虫获取）
-      const mockJobs = MOCK_JOBS.map((j) => ({
-        id: j.id,
-        title: j.title,
-        company: j.company,
-        location: j.location,
-        salary: j.salary,
-        source: 'exa' as const,
-        sourceUrl: j.url || '',
-        description: `${j.title} - ${j.company} - ${j.salary}。${j.reasoning}`,
-        requirements: [...j.matchedKeywords, ...j.missingKeywords],
-        keywords: [...j.matchedKeywords, ...j.missingKeywords],
-        postedAt: new Date().toISOString(),
-      }));
-
-      const result = await engine({
-        user: {
-          id: 'demo-user',
-          targetJobs: structured.targetJob ? [structured.targetJob] : ['AI 产品经理'],
-          targetSalary: { min: 30, max: 80, currency: 'CNY' },
-          targetLocations: ['北京', '上海', '深圳', '杭州'],
-          targetIndustries: [],
-          willingToRelocate: true,
-          remotePreferred: false,
-          privacyLevel: 'strict',
-        },
-        userSkills: structured.skills || [],
-        userYearsOfExperience: 10,
-        jobs: mockJobs,
+      const res = await fetch('/api/match/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          skills: structured.skills?.length > 0 ? structured.skills : DEMO_SKILLS,
+          yearsOfExperience: 10,
+          targetJob: 'AI 产品经理',
+        }),
       });
+      const json = await res.json();
 
-      // 合并匹配结果和 mock 数据
-      return result.matchedJobs.map((matched: any) => ({
-        ...MOCK_JOBS.find((m) => m.id === matched.id)!,
-        matchScore: matched.matchScore.score,
-        matchedKeywords: matched.matchScore.matchedKeywords,
-        missingKeywords: matched.matchScore.missingKeywords,
-        reasoning: matched.matchScore.reasoning,
+      if (!json.success || !json.matches) {
+        console.warn('匹配 API 失败，fallback');
+        return MOCK_JOBS;
+      }
+
+      // 真实匹配结果（每个 matchScore 都是真实计算的）
+      return json.matches.map((m: any) => ({
+        id: m.id,
+        title: m.title,
+        company: m.company,
+        location: m.location,
+        salary: m.salary,
+        source: m.source,
+        url: m.applyUrl || '#',
+        matchScore: m.matchScore,
+        matchedKeywords: m.matchedKeywords,
+        missingKeywords: m.missingKeywords,
+        reasoning: m.reasoning,
       }));
     } catch (err) {
       console.error('匹配失败:', err);

@@ -87,33 +87,44 @@ export class AIRouter {
   }
 
   /**
+  /**
    * 创建默认 Router（从环境变量）
+   * 注意：只在有 API key 时才创建 Provider，避免构造失败
    */
   static create(): AIRouter {
-    const providers: Record<AIProviderName, IAIProvider> = {
-      minimax: new MiniMaxProvider({
-        name: 'minimax',
-        apiKey: process.env.MINIMAX_API_KEY || '',
-        baseUrl: process.env.MINIMAX_BASE_URL,
-        model: process.env.MINIMAX_MODEL || 'MiniMax-M3',
-        enabled: !!process.env.MINIMAX_API_KEY,
-      }),
-      claude: new ClaudeProvider({
+    const providers: Partial<Record<AIProviderName, IAIProvider>> = {};
+
+    // 总是尝试创建 MiniMax（主推理）
+    providers.minimax = new MiniMaxProvider({
+      name: 'minimax',
+      apiKey: process.env.MINIMAX_API_KEY || 'placeholder',
+      baseUrl: process.env.MINIMAX_BASE_URL,
+      model: process.env.MINIMAX_MODEL || 'MiniMax-M3',
+      enabled: !!process.env.MINIMAX_API_KEY,
+    });
+
+    // 只在有 API key 时才添加 Claude
+    if (process.env.ANTHROPIC_API_KEY) {
+      providers.claude = new ClaudeProvider({
         name: 'claude',
-        apiKey: process.env.ANTHROPIC_API_KEY || '',
+        apiKey: process.env.ANTHROPIC_API_KEY,
         model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
-        enabled: !!process.env.ANTHROPIC_API_KEY,
-      }),
-      deepseek: new DeepSeekProvider({
+        enabled: true,
+      });
+    }
+
+    // 只在有 API key 时才添加 DeepSeek
+    if (process.env.DEEPSEEK_API_KEY) {
+      providers.deepseek = new DeepSeekProvider({
         name: 'deepseek',
-        apiKey: process.env.DEEPSEEK_API_KEY || '',
+        apiKey: process.env.DEEPSEEK_API_KEY,
         baseUrl: process.env.DEEPSEEK_BASE_URL,
         model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
-        enabled: !!process.env.DEEPSEEK_API_KEY,
-      }),
-    };
+        enabled: true,
+      });
+    }
 
-    return new AIRouter(providers);
+    return new AIRouter(providers as Record<AIProviderName, IAIProvider>);
   }
 
   /**

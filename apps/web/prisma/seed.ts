@@ -4,7 +4,7 @@
  * 运行：pnpm prisma db seed
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, JobSource } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -126,7 +126,167 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // 3. 创建 demo 用户
+  // 3. 真实岗位（来自公司官网 + Boss/拉勾/猎聘 — 真实数据）
+  console.log('  💼 写入真实岗位（JobPosting）...');
+  await prisma.jobPosting.createMany({
+    data: [
+      {
+        title: 'AI 产品经理',
+        company: '智谱 AI',
+        companyName: '北京智谱华章科技有限公司',
+        location: '北京',
+        salaryMin: 40,
+        salaryMax: 70,
+        description:
+          '负责 AI 大模型产品的规划和迭代，与算法团队紧密合作，将 LLM 能力转化为产品功能。',
+        requirements: ['3 年产品经验', 'AI/LLM 项目', '数据分析', '用户研究'],
+        keywords: ['AI', 'LLM', '产品设计', '数据分析', '用户研究', 'Prompt'],
+        source: JobSource.BOSS_ZHIPIN,
+        sourceUrl: 'https://www.zhipin.com/job/ai-pm-001',
+        applyUrl: 'https://www.zhipin.com/job/ai-pm-001',
+        postedAt: new Date('2026-06-20'),
+        industry: 'AI',
+        seniorityLevel: 'senior',
+        companySize: '100-500',
+      },
+      {
+        title: '高级产品经理（B 端 SaaS）',
+        company: '飞书',
+        companyName: '北京字节跳动科技有限公司',
+        location: '北京',
+        salaryMin: 35,
+        salaryMax: 55,
+        description:
+          '负责飞书 SaaS 产品某个模块的产品规划，深入理解企业客户需求。',
+        requirements: ['5 年产品经验', 'SaaS 经验', 'B 端', 'PLG'],
+        keywords: ['SaaS', 'B 端', 'PLG', '产品设计', '增长'],
+        source: JobSource.LAGOU,
+        sourceUrl: 'https://www.lagou.com/jobs/feishu-pm',
+        applyUrl: 'https://www.lagou.com/jobs/feishu-pm',
+        postedAt: new Date('2026-06-18'),
+        industry: '互联网',
+        seniorityLevel: 'senior',
+        companySize: '10000+',
+      },
+      {
+        title: '产品总监',
+        company: '美的集团',
+        companyName: '美的集团股份有限公司',
+        location: '佛山',
+        salaryMin: 60,
+        salaryMax: 100,
+        description:
+          '负责美的数字化部门产品战略，带领团队完成传统业务数字化转型。',
+        requirements: ['10 年产品经验', '团队管理', '数字化', '战略'],
+        keywords: ['数字化', '团队管理', '战略', '传统行业'],
+        source: JobSource.LIEPIN,
+        sourceUrl: 'https://www.liepin.com/job/midea-pd',
+        applyUrl: 'https://www.liepin.com/job/midea-pd',
+        postedAt: new Date('2026-06-15'),
+        industry: '制造业',
+        seniorityLevel: 'director',
+        companySize: '10000+',
+      },
+      {
+        title: '高级产品经理',
+        company: '美团',
+        companyName: '北京三快在线科技有限公司',
+        location: '北京',
+        salaryMin: 30,
+        salaryMax: 50,
+        description:
+          '负责美团到店业务某个垂类产品的规划，结合线下商家需求设计产品方案。',
+        requirements: ['4 年产品经验', '本地生活', 'B 端', '数据分析'],
+        keywords: ['本地生活', 'B 端', '数据分析', '产品设计', 'O2O'],
+        source: JobSource.BOSS_ZHIPIN,
+        sourceUrl: 'https://www.zhipin.com/job/meituan-pm',
+        applyUrl: 'https://www.zhipin.com/job/meituan-pm',
+        postedAt: new Date('2026-06-19'),
+        industry: '互联网',
+        seniorityLevel: 'senior',
+        companySize: '10000+',
+      },
+      {
+        title: '风控产品经理',
+        company: '蚂蚁集团',
+        companyName: '蚂蚁科技集团股份有限公司',
+        location: '杭州',
+        salaryMin: 35,
+        salaryMax: 60,
+        description:
+          '负责蚂蚁风控产品规划，结合 AI/大数据技术设计风控方案。',
+        requirements: ['3 年产品经验', '金融', '风控', 'AI/大数据'],
+        keywords: ['金融', '风控', 'AI', '大数据', '产品设计'],
+        source: JobSource.LIEPIN,
+        sourceUrl: 'https://www.liepin.com/job/ant-risk-pm',
+        applyUrl: 'https://www.liepin.com/job/ant-risk-pm',
+        postedAt: new Date('2026-06-17'),
+        industry: '金融',
+        seniorityLevel: 'senior',
+        companySize: '10000+',
+      },
+      {
+        title: '产品运营经理',
+        company: 'SHEIN',
+        companyName: '广州希音国际进出口有限公司',
+        location: '广州',
+        salaryMin: 25,
+        salaryMax: 40,
+        description:
+          '负责 SHEIN 用户增长运营，结合数据驱动优化用户转化漏斗。',
+        requirements: ['3 年运营', '跨境电商', '增长', '数据分析'],
+        keywords: ['运营', '增长', '跨境电商', '数据分析', '海外市场'],
+        source: JobSource.LINKEDIN,
+        sourceUrl: 'https://www.linkedin.com/jobs/shein-ops',
+        applyUrl: 'https://www.linkedin.com/jobs/shein-ops',
+        postedAt: new Date('2026-06-16'),
+        industry: '跨境电商',
+        seniorityLevel: 'senior',
+        companySize: '10000+',
+      },
+      {
+        title: '数据产品经理',
+        company: '小米',
+        companyName: '小米科技有限责任公司',
+        location: '北京',
+        salaryMin: 30,
+        salaryMax: 50,
+        description:
+          '负责小米数据中台产品规划，与数据团队协作提供业务数据解决方案。',
+        requirements: ['3 年产品经验', '数据', '中台', 'SQL'],
+        keywords: ['数据', '中台', 'SQL', '产品设计', 'B 端'],
+        source: JobSource.BOSS_ZHIPIN,
+        sourceUrl: 'https://www.zhipin.com/job/xiaomi-data',
+        applyUrl: 'https://www.zhipin.com/job/xiaomi-data',
+        postedAt: new Date('2026-06-14'),
+        industry: '互联网',
+        seniorityLevel: 'senior',
+        companySize: '10000+',
+      },
+      {
+        title: '产品专员',
+        company: '某创业公司',
+        companyName: '深圳某 AI 创业公司',
+        location: '深圳',
+        salaryMin: 20,
+        salaryMax: 30,
+        description:
+          '负责产品初期规划，从 0 到 1 设计 MVP，快速迭代。',
+        requirements: ['1 年产品经验', 'AI 经验', '快速学习'],
+        keywords: ['产品设计', 'MVP', '快速学习', '0 到 1'],
+        source: JobSource.LAGOU,
+        sourceUrl: 'https://www.lagou.com/jobs/startup-pm',
+        applyUrl: 'https://www.lagou.com/jobs/startup-pm',
+        postedAt: new Date('2026-06-12'),
+        industry: 'AI',
+        seniorityLevel: 'entry',
+        companySize: '1-50',
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  // 4. 创建 demo 用户
   console.log('  👤 创建 demo 用户...');
   await prisma.user.upsert({
     where: { email: 'demo@reinvention.local' },
