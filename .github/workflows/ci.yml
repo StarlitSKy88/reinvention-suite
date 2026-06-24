@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, master]
+  pull_request:
+    branches: [main, develop, master]
+
+jobs:
+  test:
+    name: Test (Lint + Type Check + Unit + E2E)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: reinvention
+          POSTGRES_PASSWORD: reinvention
+          POSTGRES_DB: reinvention_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm type-check
+
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: postgresql://reinvention:reinvention@localhost:5432/reinvention_test
+        run: |
+          cd apps/web
+          npx prisma generate
+
+      - name: Run unit tests
+        env:
+          DATABASE_URL: postgresql://reinvention:reinvention@localhost:5432/reinvention_test
+        run: |
+          cd apps/web
+          npx vitest run
+
+      - name: Build
+        env:
+          DATABASE_URL: postgresql://reinvention:reinvention@localhost:5432/reinvention_test
+        run: |
+          cd apps/web
+          npx next build
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright
+        run: |
+          cd apps/web
+          npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        env:
+          BASE_URL: http://localhost:3000
+        run: |
+          cd apps/web
+          npx playwright test
+
+      - name: Upload Playwright Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 7
