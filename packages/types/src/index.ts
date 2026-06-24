@@ -40,6 +40,8 @@ export interface ResumeStructured {
     phone: string;
     location: string;
   };
+  /** 自我总结（一句话描述）*/
+  summary?: string;
   experiences: ResumeExperience[];
   education: ResumeEducation[];
   skills: string[];
@@ -150,7 +152,7 @@ export interface JobPosting {
     min: number;
     max: number;
     currency: string;
-  };
+  } | string;
   description: string;
   requirements: string[];
   keywords: string[];
