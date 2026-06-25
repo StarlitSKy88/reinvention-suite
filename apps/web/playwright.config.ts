@@ -7,21 +7,16 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   reporter: 'list',
-  use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3030',
-    trace: 'off',
-    headless: true,
-  },
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.BASE_URL || 'http://localhost:3030',
+        trace: 'off',
+        headless: true,
+        screenshot: 'only-on-failure',
+      },
     },
   ],
-  use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3030',
-    trace: 'off',
-    headless: true,
-    screenshot: 'only-on-failure',
-  },
 });
