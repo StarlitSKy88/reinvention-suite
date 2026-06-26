@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schemas.edgeone.app/edgeone.json",
+  "name": "reinvention-suite",
+  "build": {
+    "command": "cd apps/web && pnpm install && pnpm build",
+    "outputDir": "apps/web/.next",
+    "framework": "nextjs"
+  },
+  "cloudFunctions": [
+    {
+      "name": "diagnose-api",
+      "runtime": "go",
+      "entry": "cloud-functions/api-go/main.go",
+      "route": "/api/diagnose/*"
+    }
+  ],
+  "accelerateRegion": {
+    "mainlandRegions": ["ap-guangzhou"],
+    "overseasRegions": ["ap-singapore"]
+  }
+}
