@@ -2,8 +2,8 @@
   "$schema": "https://schemas.edgeone.app/edgeone.json",
   "name": "reinvention-suite",
   "build": {
-    "command": "cd apps/web && pnpm install && pnpm build",
-    "outputDir": "apps/web/.next",
+    "command": "cd apps/web && pnpm install --frozen-lockfile=false && pnpm build",
+    "outputDir": ".next",
     "framework": "nextjs"
   },
   "cloudFunctions": [
