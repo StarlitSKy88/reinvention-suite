@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev --port 3000",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start --port 3000",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
@@ -18,7 +18,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
-    "clean": "rm -rf .next .turbo coverage"
+    "clean": "rm -rf .next .turbo coverage",
+    "postinstall": "prisma generate || true"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.0",
@@ -76,5 +77,13 @@
     "tsx": "^4.22.4",
     "typescript": "^5.5.0",
     "vitest": "^2.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
   }
 }
