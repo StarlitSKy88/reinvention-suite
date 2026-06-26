@@ -31,20 +31,20 @@ const ROUTING_STRATEGY: Record<
 > = {
   // 简历改写：主用 MiniMax，升级 Claude
   resume_rewrite: {
-    primary: 'minimax',
+    primary: 'deepseek',
     fallback: 'deepseek',
     highQuality: 'claude',
   },
 
   // 简历解析：主用 MiniMax
-  resume_parse: { primary: 'minimax', fallback: 'deepseek' },
+  resume_parse: { primary: 'deepseek', fallback: 'deepseek' },
 
   // JD 分析：主用 MiniMax
-  jd_analysis: { primary: 'minimax', fallback: 'deepseek' },
+  jd_analysis: { primary: 'deepseek', fallback: 'deepseek' },
 
   // 差距分析：主用 MiniMax，可升级 Claude
   gap_analysis: {
-    primary: 'minimax',
+    primary: 'deepseek',
     fallback: 'deepseek',
     highQuality: 'claude',
   },
@@ -56,16 +56,16 @@ const ROUTING_STRATEGY: Record<
   },
 
   // 年龄去敏：主用 MiniMax
-  age_mask: { primary: 'minimax', fallback: 'deepseek' },
+  age_mask: { primary: 'deepseek', fallback: 'deepseek' },
 
   // 反歧视检测：主用 MiniMax
-  discrim_detect: { primary: 'minimax', fallback: 'deepseek' },
+  discrim_detect: { primary: 'deepseek', fallback: 'deepseek' },
 
   // 项目推荐：主用 MiniMax
-  project_recommend: { primary: 'minimax', fallback: 'deepseek' },
+  project_recommend: { primary: 'deepseek', fallback: 'deepseek' },
 
   // 公司匹配：主用 MiniMax
-  company_match: { primary: 'minimax', fallback: 'deepseek' },
+  company_match: { primary: 'deepseek', fallback: 'deepseek' },
 
   // 大批量匹配：降本到 DeepSeek
   bulk_match: { primary: 'deepseek', fallback: 'minimax' },
@@ -97,10 +97,10 @@ export class AIRouter {
     // 总是尝试创建 MiniMax（主推理）
     providers.minimax = new MiniMaxProvider({
       name: 'minimax',
-      apiKey: process.env.MINIMAX_API_KEY || 'placeholder',
-      baseUrl: process.env.MINIMAX_BASE_URL,
-      model: process.env.MINIMAX_MODEL || 'MiniMax-M3',
-      enabled: !!process.env.MINIMAX_API_KEY,
+      apiKey: process.env.DEEPSEEK_API_KEY || process.env.MINIMAX_API_KEY || 'placeholder',
+      baseUrl: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1',
+      model: process.env.DEEPSEEK_MODEL || 'deepseek-v4-flash' || 'MiniMax-M3',
+      enabled: !!process.env.DEEPSEEK_API_KEY || process.env.MINIMAX_API_KEY,
     });
 
     // 只在有 API key 时才添加 Claude
