@@ -1,0 +1,138 @@
+# Reinvention Suite — 一键本地部署
+# 用法：
+#   1. cp .env.example .env && 编辑 .env 填入 API keys
+#   2. docker compose up -d
+#   3. 访问 http://localhost:3000
+
+version: '3.9'
+
+services:
+  # ===== 主应用（Next.js）=====
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: reinvention-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://reinvention:reinvention@db:5432/reinvention
+      - REDIS_URL=redis://redis:6379
+      - SCRAPER_SERVICE_URL=http://scraper:8000
+      - MINIMAX_API_KEY=${MINIMAX_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      scraper:
+        condition: service_started
+    networks:
+      - reinvention-net
+
+  # ===== 爬虫微服务（Python FastAPI）=====
+  scraper:
+    build:
+      context: .
+      dockerfile: apps/scraper/Dockerfile
+    container_name: reinvention-scraper
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://reinvention:reinvention@db:5432/reinvention
+      - REDIS_URL=redis://redis:6379
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+      - SCRAPER_PROXY_ENABLED=${SCRAPER_PROXY_ENABLED:-false}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - reinvention-net
+
+  # ===== PostgreSQL 数据库 =====
+  db:
+    image: postgres:16-alpine
+    container_name: reinvention-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=reinvention
+      - POSTGRES_USER=reinvention
+      - POSTGRES_PASSWORD=reinvention
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./apps/web/prisma/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reinvention"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - reinvention-net
+
+  # ===== Redis 缓存 =====
+  redis:
+    image: redis:7-alpine
+    container_name: reinvention-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - reinvention-net
+
+  # ===== Nginx 反向代理（生产环境）=====
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: reinvention-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - web
+    networks:
+      - reinvention-net
+
+  # ===== 可选：本地 LLM（Ollama）=====
+  ollama:
+    image: ollama/ollama:latest
+    container_name: reinvention-ollama
+    restart: unless-stopped
+    profiles: ["local-llm"]  # 仅在启用 local-llm profile 时启动
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - reinvention-net
+
+networks:
+  reinvention-net:
+    driver: bridge
+
+volumes:
+  db-data:
+  redis-data:
+  ollama-data:
