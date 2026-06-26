@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
 
     // 2. 转换格式（DB → 匹配引擎需要的格式）
-    const jobsForEngine: JobPosting[] = dbJobs.map((j) => ({
+    const jobsForEngine: JobPosting[] = dbJobs.map((j: any) => ({
       id: j.id,
       title: j.title,
       company: j.company,
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
 
     // 4. 合并真实岗位详情 + 真实匹配结果
     const matches = result.matchedJobs.slice(0, 8).map((m) => {
-      const job = dbJobs.find((j) => j.id === m.id);
+      const job = dbJobs.find((j: any) => j.id === m.id);
       return {
         id: m.id,
         title: job?.title || m.id,
